@@ -32,6 +32,10 @@ module Arrow =
     let (^>>) f sf =
         arr f >>> sf
 
+    /// Composes a signal function with a plain function, left to right.
+    let (>>^) sf f =
+        sf >>> arr f
+
     /// Shares an input between two signal functions.
     let rec (&&&) sf1 sf2 =
         (fun a -> (a, a)) ^>> (sf1 *** sf2)
