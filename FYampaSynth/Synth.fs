@@ -1,22 +1,52 @@
 ﻿namespace FYampaSynth
 
 open System
+open NAudio.Wave
 
 type Frequency = float
 type ControlValue = float
 type Sample = float
+
+type SampleProvider(sf : SignalFunction<_, _>) =
+
+    let numChannels = 2
+    let sampleRate = 44100
+    let dt = 1.0 / float sampleRate
+
+    let read sf (buffer : float32[]) offset count =
+        assert(count % numChannels = 0)
+        let numSamples = count / numChannels
+        (sf, seq { 0 .. numSamples - 1 })
+            ||> Seq.fold (fun (SF tf) iSample ->
+                let sf', (sample : float) = tf dt 0.0
+                let sample = float32 sample
+                let idx = numChannels * offset + iSample
+                for iChannel = 0 to numChannels - 1 do
+                    buffer.[idx + iChannel] <- sample
+                sf')
+
+    let mutable sfCur = sf
+
+    interface ISampleProvider with
+
+        member __.WaveFormat =
+            WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, numChannels)
+
+        member __.Read(buffer, offset, count) =
+            sfCur <- read sfCur buffer offset count
+            count
 
 /// https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.159.2277&rep=rep1&type=pdf
 module Synth =
 
     open Arrow
 
-    /// Integrates a sample over time.
+    /// Integrates a signal over time.
     let integral =
-        let rec loop (acc : Sample) (prev : Sample) =
-            SF (fun dt (samp : Sample) ->
-                let acc' = acc + (dt * prev)   // rectangle rule
-                loop acc' samp, acc')
+        let rec loop acc prev =
+            SF (fun dt cur ->
+                let acc' = acc + (float dt * prev)   // rectangle rule
+                loop acc' cur, acc')
         loop 0.0 0.0
 
     /// Sine wave oscillator with dynamically controllable frequency.
