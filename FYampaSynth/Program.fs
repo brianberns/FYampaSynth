@@ -24,10 +24,15 @@ type AudioEngine() =
 
 module Program =
 
+    open Arrow
+
     [<EntryPoint>]
     let main argv =
         use engine = new AudioEngine()
-        let sp = SampleProvider(Synth.oscSine 440.0)
-        engine.AddInput(sp :> ISampleProvider)
+        let sp =
+            Synth.oscSine 440.0
+                >>^ ((*) 0.02)
+                |> SampleProvider
+        engine.AddInput(sp)
         Console.ReadLine() |> ignore
         0

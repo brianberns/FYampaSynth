@@ -20,7 +20,7 @@ type SampleProvider(sf : SignalFunction<_, _>) =
             ||> Seq.fold (fun (SF tf) iSample ->
                 let sf', (sample : float) = tf dt 0.0
                 let sample = float32 sample
-                let idx = numChannels * offset + iSample
+                let idx = numChannels * (offset + iSample)
                 for iChannel = 0 to numChannels - 1 do
                     buffer.[idx + iChannel] <- sample
                 sf')
