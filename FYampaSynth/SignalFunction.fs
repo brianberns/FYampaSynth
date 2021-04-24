@@ -168,8 +168,8 @@ module Arrow =
     /// by one time step and filling the initial time step with
     /// the given value.
     let loop fill sf =
-        let rec loop (SF tf) c =
-            SF (fun dt (a : 'a) ->
+        let rec loop' (SF tf) c =
+            SF (fun dt a ->
                 let sf', (b, c) = tf dt (a, c)
-                loop sf' c, b)
-        loop sf fill
+                loop' sf' c, b)
+        loop' sf fill
