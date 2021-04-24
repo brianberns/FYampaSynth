@@ -30,8 +30,10 @@ module Program =
     let main argv =
         use engine = new AudioEngine()
         let sp =
-            Synth.oscSine 440.0
-                >>^ ((*) 0.02)
+            Synth.oscSine 5.0
+                >>^ (*) 0.05
+                >>> Synth.oscSine 440.0
+                >>^ (*) 0.02
                 |> SampleProvider
         engine.AddInput(sp)
         Console.ReadLine() |> ignore
