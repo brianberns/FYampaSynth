@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <Compile Include="SignalFunction.fs" />
-    <Compile Include="Arrow.fs" />
     <Compile Include="Synth.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

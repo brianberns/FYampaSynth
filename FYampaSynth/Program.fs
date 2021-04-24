@@ -1,6 +1,6 @@
 ﻿namespace FYampaSynth
+
 open System
-open System.Threading
 
 open NAudio.Wave
 open NAudio.Wave.SampleProviders
@@ -30,9 +30,9 @@ module Program =
     let main argv =
         use engine = new AudioEngine()
         let sp =
-            Synth.oscSine 5.0
-                >>^ (*) 0.05
-                >>> Synth.oscSine 440.0
+            Synth.oscSine 0.5
+                >>^ (*) 0.5
+                >>> Synth.oscSine 220.0
                 >>^ (*) 0.02
                 |> SampleProvider
         engine.AddInput(sp)
