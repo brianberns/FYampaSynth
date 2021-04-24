@@ -7,12 +7,14 @@ type Frequency = float
 type ControlValue = float
 type Sample = float
 
-type SampleProvider(sf : SignalFunction<_, _>) =
+/// Synthesizes sound using the given signal function.
+type Synth(sf) =
 
     let numChannels = 2
     let sampleRate = 44100
     let dt = 1.0 / float sampleRate
 
+    /// Populates the given buffer using the given signal function.
     let read sf (buffer : float32[]) offset count =
         assert(count % numChannels = 0)
         let numSamples = count / numChannels
@@ -25,6 +27,7 @@ type SampleProvider(sf : SignalFunction<_, _>) =
                     buffer.[idx + iChannel] <- sample
                 sf')
 
+    /// Current state of the signal function.
     let mutable sfCur = sf
 
     interface ISampleProvider with

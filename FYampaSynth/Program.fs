@@ -29,12 +29,12 @@ module Program =
     [<EntryPoint>]
     let main argv =
         use engine = new AudioEngine()
-        let sp =
+        let synth =
             Synth.oscSine 0.5
                 >>^ (*) 0.5
                 >>> Synth.oscSine 220.0
                 >>^ (*) 0.02
-                |> SampleProvider
-        engine.AddInput(sp)
+                |> Synth
+        engine.AddInput(synth)
         Console.ReadLine() |> ignore
         0
