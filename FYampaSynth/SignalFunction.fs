@@ -114,6 +114,10 @@ module Arrow =
     let rec (&&&) sf1 sf2 =
         (fun a -> (a, a)) ^>> (sf1 *** sf2)
 
+    /// Identity arrow: output is same as input.
+    let identity<'a> =
+        arr id<'a>
+
     ///
     /// Widens a signal function.
     //
@@ -127,7 +131,7 @@ module Arrow =
     //       +------------+
     //    
     let rec first sf =
-        sf *** arr id
+        sf *** identity
 
     ///
     /// Widens a signal function.
@@ -142,17 +146,30 @@ module Arrow =
     //       +------------+
     //       
     let rec second sf =
-        arr id *** sf
+        identity *** sf
 
     /// Arrowizes a function of two parameters.
     let arr2 f =
         let uncurry f (a, b) = f a b
         arr (uncurry f)
 
-    /// Identity arrow: output is same as input.
-    let identity<'a> =
-        arr id<'a>
-
     /// Constant arrow: ignores input.
     let constant value =
         arr (fun _ -> value)
+
+    /// Delays a signal by one time step, filling the initial
+    /// time step with the given value.
+    let delay fill =
+        let rec loop prev =
+            SF (fun _ cur -> loop cur, prev)
+        loop fill
+
+    /// Feeds the given signal function back into itself, offset
+    /// by one time step and filling the initial time step with
+    /// the given value.
+    let loop fill sf =
+        let rec loop (SF tf) c =
+            SF (fun dt (a : 'a) ->
+                let sf', (b, c) = tf dt (a, c)
+                loop sf' c, b)
+        loop sf fill
