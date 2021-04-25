@@ -53,9 +53,36 @@ module Synth =
         loop 0.0 0.0
 
     /// Sine wave oscillator with dynamically controllable frequency.
-    let oscSine (nominalFreq : Frequency) : SignalFunction<ControlValue, Sample> =
-        let angularFreq =
-            arr (fun cv ->
-                let varyingFreq = nominalFreq * (2.0 ** cv)
-                2.0 * Math.PI * varyingFreq)
-        angularFreq >>> integral >>^ Math.Sin
+    let oscSine (f0 : Frequency) : SignalFunction<ControlValue, Sample> =
+        arr (fun cv ->
+            let f = f0 * (2.0 ** cv)
+            2.0 * Math.PI * f)
+            >>> integral
+            >>^ Math.Sin
+
+    /// Sawtooth wave oscillator with dynamically controllable frequency.
+    let oscSawtooth (f0 : Frequency) : SignalFunction<ControlValue, Sample> =
+        arr (fun cv ->
+            f0 * (2.0 ** cv))
+            >>> integral
+            >>^ (fun x -> 2.0 * (x - floor x) - 1.0)
+
+    let moogVcf sr f0 r : SignalFunction<Sample * ControlValue, ControlValue> =
+
+        let moogAux =
+            let vt = 2.0 * 20000.0   // thermal voltage
+            arr (fun ((x, g), ym1) ->
+                let y = ym1 + vt * g * (Math.Tanh(x/vt) - Math.Tanh(ym1/vt))
+                y, y)
+                |> loop 0.0
+
+        let ya =
+            arr (fun ((x, cv), yd) ->
+                let g =
+                    let f = f0 * (2.0 ** cv)
+                    1.0 - Math.Exp(-2.0 * Math.PI * f / sr)
+                x - 4.0 * r * yd, g)
+                >>> moogAux
+                >>> split
+                |> loop 0.0
+        ya

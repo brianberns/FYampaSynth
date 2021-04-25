@@ -30,9 +30,8 @@ module Program =
     let main argv =
         use engine = new AudioEngine()
         let synth =
-            Synth.oscSine 0.5
-                >>^ (*) 0.5
-                >>> Synth.oscSine 220.0
+            (Synth.oscSawtooth 220.0 &&& identity)
+                >>> Synth.moogVcf 44100.0 440.0 0.5
                 >>^ (*) 0.02
                 |> Synth
         engine.AddInput(synth)

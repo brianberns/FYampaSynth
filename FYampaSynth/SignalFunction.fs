@@ -97,6 +97,21 @@ module Arrow =
     let (>>^) sf f =
         sf >>> arr f
 
+    /// Splits a signal into two streams.
+    //
+    //       +-------+
+    //       |       |
+    //       |   +---+-->
+    //       |   |   |
+    //    ---+---+   |
+    //       |   |   |
+    //       |   +---+-->
+    //       |       |
+    //       +-------+
+    //    
+    let split<'a> =
+        arr (fun (a : 'a) -> (a, a))
+
     /// Shares a single input between two signal functions.
     //
     //       +-----------------+
@@ -112,7 +127,7 @@ module Arrow =
     //       +-----------------+
     //    
     let rec (&&&) sf1 sf2 =
-        (fun a -> (a, a)) ^>> (sf1 *** sf2)
+        split >>> (sf1 *** sf2)
 
     /// Identity arrow: output is same as input.
     let identity<'a> =
