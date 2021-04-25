@@ -67,22 +67,35 @@ module Synth =
             >>> integral
             >>^ (fun x -> 2.0 * (x - floor x) - 1.0)
 
+    /// Moog transistor ladder filter.
     let moogVcf sr f0 r : SignalFunction<Sample * ControlValue, ControlValue> =
 
         let moogAux =
-            let vt = 2.0 * 20000.0   // thermal voltage
-            arr (fun ((x, g), ym1) ->
+            let vt = 2.0 * 20000.0      // thermal voltage
+            arr (fun ((x, g), ym1) ->   // ym1 = y(n-1)
                 let y = ym1 + vt * g * (Math.Tanh(x/vt) - Math.Tanh(ym1/vt))
                 y, y)
                 |> loop 0.0
 
+        let g =
+            arr (fun cv ->
+                let f = f0 * (2.0 ** cv)
+                1.0 - Math.Exp(-2.0 * Math.PI * f / sr))
+
         let ya =
-            arr (fun ((x, cv), yd) ->
-                let g =
-                    let f = f0 * (2.0 ** cv)
-                    1.0 - Math.Exp(-2.0 * Math.PI * f / sr)
+            arr (fun (x, g, yd) ->
                 x - 4.0 * r * yd, g)
                 >>> moogAux
+
+        let pipeline =
+            arr (fun ((x, g), yd) ->
+                (((x, g, yd), g), g), g)
+                >>> (first
+                        (first
+                            (first ya
+                                >>> moogAux)   // yb
+                                >>> moogAux)   // yc
+                                >>> moogAux)   // yd
                 >>> split
                 |> loop 0.0
-        ya
+        second g >>> pipeline
