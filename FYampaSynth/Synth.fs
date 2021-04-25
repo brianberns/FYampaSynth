@@ -44,6 +44,8 @@ module Synth =
 
     open Arrow
 
+    let private pi = Math.PI
+
     /// Integrates a signal over time.
     let integral =
         let rec loop acc prev =
@@ -56,9 +58,9 @@ module Synth =
     let oscSine (f0 : Frequency) : SignalFunction<ControlValue, Sample> =
         arr (fun cv ->
             let f = f0 * (2.0 ** cv)
-            2.0 * Math.PI * f)
+            2.0 * pi * f)
             >>> integral
-            >>^ Math.Sin
+            >>^ sin
 
     /// Sawtooth wave oscillator with dynamically controllable frequency.
     let oscSawtooth (f0 : Frequency) : SignalFunction<ControlValue, Sample> =
@@ -73,14 +75,14 @@ module Synth =
         let moogAux =
             let vt = 2.0 * 20000.0      // thermal voltage
             arr (fun ((x, g), ym1) ->   // ym1 = y(n-1)
-                let y = ym1 + vt * g * (Math.Tanh(x/vt) - Math.Tanh(ym1/vt))
+                let y = ym1 + vt * g * (tanh (x/vt) - tanh (ym1/vt))
                 y, y)
                 |> loop 0.0
 
         let g =
             arr (fun cv ->
                 let f = f0 * (2.0 ** cv)
-                1.0 - Math.Exp(-2.0 * Math.PI * f / sr))
+                1.0 - exp (-2.0 * pi * f / sr))
 
         let ya =
             arr (fun (x, g, yd) ->
@@ -98,4 +100,5 @@ module Synth =
                                 >>> moogAux)   // yd
                 >>> split
                 |> loop 0.0
+
         second g >>> pipeline
