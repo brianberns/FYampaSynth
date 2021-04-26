@@ -88,16 +88,14 @@ module Synth =
             arr (fun (x, g, yd) ->
                 x - 4.0 * r * yd, g)
                 >>> moogAux
+        let yb = first ya >>> moogAux
+        let yc = first yb >>> moogAux
+        let yd = first yc >>> moogAux
 
         let pipeline =
             arr (fun ((x, g), yd) ->
                 (((x, g, yd), g), g), g)
-                >>> (first
-                        (first
-                            (first ya
-                                >>> moogAux)   // yb
-                                >>> moogAux)   // yc
-                                >>> moogAux)   // yd
+                >>> yd
                 >>> split
                 |> loop 0.0
 
