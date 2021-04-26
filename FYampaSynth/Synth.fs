@@ -92,10 +92,17 @@ module Synth =
         let yc = first yb >>> moogAux
         let yd = first yc >>> moogAux
 
+        let phaseShift =
+            split
+                >>> first (delay 0.0)
+                >>> arr (fun (x, y) -> (x + y) / 2.0)
+                >>> delay 0.0
+
         let pipeline =
             arr (fun ((x, g), yd) ->
                 (((x, g, yd), g), g), g)
                 >>> yd
+                >>> phaseShift
                 >>> split
                 |> loop 0.0
 
