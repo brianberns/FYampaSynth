@@ -180,8 +180,7 @@ type MainForm() as this =
                 |> engine.AddInput
 
     let onLoad _ =
-        let flag = btnPlay.Focus()
-        assert(flag)
+        btnPlay.Select()
 
     do
         [
