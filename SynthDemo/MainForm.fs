@@ -98,7 +98,7 @@ type MainForm() as this =
     let makeSynth noteFreq cutoffFreq gain =
         let cv = Synth.oscSine 1.0
         let sawtooth = Synth.oscSawtooth noteFreq
-        (sawtooth &&& cv) >>> Synth.moogVcf 44100.0 (4.0 * cutoffFreq) 0.5
+        (sawtooth &&& cv) >>> Synth.moogVcf 44100.0 cutoffFreq 0.5
             >>^ (*) gain
             |> Synth
 
