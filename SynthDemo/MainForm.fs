@@ -13,6 +13,11 @@ module Control =
         parent.Controls.Add(control)
         control
 
+type ControlType =
+    | Constant = 0
+    | Sine = 1
+    | Sawtooth = 2
+
 type MainForm() as this =
     inherit Form(
         Text = "Moog Demo",
@@ -36,9 +41,9 @@ type MainForm() as this =
             Minimum = 1,
             Maximum = 88,
             Value = 49,
-            TickFrequency = 8,
+            TickFrequency = 12,
             SmallChange = 1,
-            LargeChange = 8,
+            LargeChange = 12,
             Size = Size(this.ClientSize.Width - label.Width - 3 * padding, 0),
             Location = Point(label.Width + padding, label.Location.Y))
             |> Control.addTo this
@@ -58,17 +63,17 @@ type MainForm() as this =
         new TrackBar(
             Minimum = 1,
             Maximum = 88,
-            Value = 49 + 2 * 8,
-            TickFrequency = 8,
+            Value = trackNote.Value + 2 * 12,
+            TickFrequency = 12,
             SmallChange = 1,
-            LargeChange = 8,
+            LargeChange = 12,
             Size = Size(this.ClientSize.Width - label.Width - 3 * padding, 0),
             Location = Point(label.Width + padding, label.Location.Y))
             |> Control.addTo this
 
     let getNoteFrequency note =
-        440.0 * 2.0 ** ((1.0/12.0) * (float note - 49.0))
-
+        440.0 * (2.0 ** ((1.0/12.0) * (float note - 49.0)))
+        
     let trackControl =
 
         let label =
@@ -121,11 +126,16 @@ type MainForm() as this =
     let getGain volume =
         float volume / (10.0 * float trackVolume.Maximum)
 
-    let makeSynth noteFreq cutoffFreq ctrlFreq gain =
-        let cv = Synth.oscSine ctrlFreq
+    let makeSynth noteFreq cutoffFreq ctrlType ctrlFreq gain =
         let note = Synth.oscSawtooth noteFreq
+        let ctrl =
+            match ctrlType with
+                | ControlType.Constant -> constant 0.0
+                | ControlType.Sine -> Synth.oscSine ctrlFreq
+                | ControlType.Sawtooth -> Synth.oscSawtooth ctrlFreq
+                | _ -> failwith "Unexpected"
         let resonance = 0.5
-        (note &&& cv) >>> Synth.moogVcf 44100.0 cutoffFreq resonance
+        (note &&& ctrl) >>> Synth.moogVcf 44100.0 cutoffFreq resonance
             >>^ (*) gain
             |> Synth
 
@@ -145,9 +155,10 @@ type MainForm() as this =
         if btnPlay.Checked then
             let noteFreq = getNoteFrequency trackNote.Value
             let cutoffFreq = getNoteFrequency trackCutoff.Value
+            let ctrlType = ControlType.Sine
             let ctrlFreq = getControlFrequency trackControl.Value
             let gain = getGain trackVolume.Value
-            makeSynth noteFreq cutoffFreq ctrlFreq gain
+            makeSynth noteFreq cutoffFreq ctrlType ctrlFreq gain
                 |> engine.AddInput
 
     do
