@@ -179,6 +179,10 @@ type MainForm() as this =
             makeSynth noteFreq filterFreqOpt ctrlType ctrlFreq gain
                 |> engine.AddInput
 
+    let onLoad _ =
+        let flag = btnPlay.Focus()
+        assert(flag)
+
     do
         [
             btnPlay.CheckedChanged
@@ -188,3 +192,4 @@ type MainForm() as this =
             trackControl.ValueChanged
             trackVolume.ValueChanged
         ] |> Seq.iter (fun evt -> evt.Add(onParamChanged))
+        this.Load.Add(onLoad)
