@@ -21,6 +21,7 @@ type MainForm() as this =
         StartPosition = FormStartPosition.CenterScreen)
 
     let padding = 10
+    let labelWidth = 50
 
     let trackNote =
 
@@ -28,13 +29,36 @@ type MainForm() as this =
             new Label(
                 Text = "Note",
                 Location = Point(padding, padding),
-                AutoSize = true)
+                Width = labelWidth)
                 |> Control.addTo this
 
         new TrackBar(
             Minimum = 1,
             Maximum = 88,
             Value = 49,
+            TickFrequency = 8,
+            SmallChange = 1,
+            LargeChange = 8,
+            Size = Size(this.ClientSize.Width - label.Width - 3 * padding, 0),
+            Location = Point(label.Width + padding, label.Location.Y))
+            |> Control.addTo this
+
+    let trackCutoff =
+
+        let label =
+            new Label(
+                Text = "Cutoff",
+                Location =
+                    Point(
+                        padding,
+                        trackNote.Location.Y + trackNote.Height),
+                Width = labelWidth)
+                |> Control.addTo this
+
+        new TrackBar(
+            Minimum = 1,
+            Maximum = 88,
+            Value = 49 + 2 * 8,
             TickFrequency = 8,
             SmallChange = 1,
             LargeChange = 8,
@@ -53,8 +77,8 @@ type MainForm() as this =
                 Location =
                     Point(
                         padding,
-                        trackNote.Location.Y + trackNote.Height + padding),
-                AutoSize = true)
+                        trackCutoff.Location.Y + trackCutoff.Height),
+                Width = labelWidth)
                 |> Control.addTo this
 
         new TrackBar(
@@ -71,10 +95,10 @@ type MainForm() as this =
     let getGain volume =
         float volume / 100.0
 
-    let makeSynth freq gain =
+    let makeSynth noteFreq cutoffFreq gain =
         let cv = Synth.oscSine 1.0
-        let sawtooth = Synth.oscSawtooth freq
-        (sawtooth &&& cv) >>> Synth.moogVcf 44100.0 (4.0 * freq) 0.5
+        let sawtooth = Synth.oscSawtooth noteFreq
+        (sawtooth &&& cv) >>> Synth.moogVcf 44100.0 (4.0 * cutoffFreq) 0.5
             >>^ (*) gain
             |> Synth
 
@@ -92,11 +116,15 @@ type MainForm() as this =
     let onParamChanged _ =
         engine.RemoveAllInputs()
         if btnPlay.Checked then
-            let freq = getNoteFrequency trackNote.Value
+            let noteFreq = getNoteFrequency trackNote.Value
+            let cutoffFreq = getNoteFrequency trackCutoff.Value
             let gain = getGain trackVolume.Value
-            engine.AddInput(makeSynth freq gain)
+            engine.AddInput(makeSynth noteFreq cutoffFreq gain)
 
     do
-        btnPlay.CheckedChanged.Add(onParamChanged)
-        trackNote.ValueChanged.Add(onParamChanged)
-        trackVolume.ValueChanged.Add(onParamChanged)
+        [
+            btnPlay.CheckedChanged
+            trackNote.ValueChanged
+            trackCutoff.ValueChanged
+            trackVolume.ValueChanged
+        ] |> Seq.iter (fun evt -> evt.Add(onParamChanged))
