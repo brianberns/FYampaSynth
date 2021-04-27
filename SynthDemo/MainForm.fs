@@ -69,11 +69,11 @@ type MainForm() as this =
     let getNoteFrequency note =
         440.0 * 2.0 ** ((1.0/12.0) * (float note - 49.0))
 
-    let trackResonance =
+    let trackControl =
 
         let label =
             new Label(
-                Text = "Resonance",
+                Text = "Control",
                 Location =
                     Point(
                         padding,
@@ -82,18 +82,18 @@ type MainForm() as this =
                 |> Control.addTo this
 
         new TrackBar(
-            Minimum = 0,
-            Maximum = 10,
-            Value = 5,
-            TickFrequency = 1,
+            Minimum = -8,
+            Maximum = 8,
+            Value = 0,
+            TickFrequency = 4,
             SmallChange = 1,
-            LargeChange = 1,
+            LargeChange = 4,
             Size = Size(this.ClientSize.Width - label.Width - 3 * padding, 0),
             Location = Point(label.Width + padding, label.Location.Y))
             |> Control.addTo this
 
-    let getResonance value =
-        float value / float trackResonance.Maximum
+    let getControlFrequency value =
+        2.0 ** (float value / 4.0)
 
     let trackVolume =
 
@@ -103,7 +103,7 @@ type MainForm() as this =
                 Location =
                     Point(
                         padding,
-                        trackResonance.Location.Y + trackResonance.Height),
+                        trackControl.Location.Y + trackControl.Height),
                 Width = labelWidth)
                 |> Control.addTo this
 
@@ -121,10 +121,11 @@ type MainForm() as this =
     let getGain volume =
         float volume / (10.0 * float trackVolume.Maximum)
 
-    let makeSynth noteFreq cutoffFreq resonance gain =
-        let cv = Synth.oscSine 1.0
-        let sawtooth = Synth.oscSawtooth noteFreq
-        (sawtooth &&& cv) >>> Synth.moogVcf 44100.0 cutoffFreq resonance
+    let makeSynth noteFreq cutoffFreq ctrlFreq gain =
+        let cv = Synth.oscSine ctrlFreq
+        let note = Synth.oscSawtooth noteFreq
+        let resonance = 0.5
+        (note &&& cv) >>> Synth.moogVcf 44100.0 cutoffFreq resonance
             >>^ (*) gain
             |> Synth
 
@@ -144,9 +145,9 @@ type MainForm() as this =
         if btnPlay.Checked then
             let noteFreq = getNoteFrequency trackNote.Value
             let cutoffFreq = getNoteFrequency trackCutoff.Value
-            let resonance = getResonance trackResonance.Value
+            let ctrlFreq = getControlFrequency trackControl.Value
             let gain = getGain trackVolume.Value
-            makeSynth noteFreq cutoffFreq resonance gain
+            makeSynth noteFreq cutoffFreq ctrlFreq gain
                 |> engine.AddInput
 
     do
@@ -154,6 +155,6 @@ type MainForm() as this =
             btnPlay.CheckedChanged
             trackNote.ValueChanged
             trackCutoff.ValueChanged
-            trackResonance.ValueChanged
+            trackControl.ValueChanged
             trackVolume.ValueChanged
         ] |> Seq.iter (fun evt -> evt.Add(onParamChanged))
