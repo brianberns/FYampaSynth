@@ -28,6 +28,7 @@ module Program =
 
         Application.EnableVisualStyles()
         Application.SetCompatibleTextRenderingDefault(false)
+        Application.SetHighDpiMode(HighDpiMode.DpiUnawareGdiScaled) |> ignore
         Application.ThreadException.Add(onThreadException)
         AppDomain.CurrentDomain.UnhandledException.Add(onUnhandledException)
         Application.Run(new MainForm())
