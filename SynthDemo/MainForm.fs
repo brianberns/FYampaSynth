@@ -26,13 +26,14 @@ type MainForm() as this =
         StartPosition = FormStartPosition.CenterScreen)
 
     let padding = 10
-    let labelWidth = 75
+    let labelWidth = 50
 
     let trackNote =
 
         let label =
             new Label(
                 Text = "Note",
+                TextAlign = ContentAlignment.MiddleLeft,
                 Location = Point(padding, padding),
                 Width = labelWidth)
                 |> Control.addTo this
@@ -48,28 +49,34 @@ type MainForm() as this =
             Location = Point(label.Width + padding, label.Location.Y))
             |> Control.addTo this
 
-    let trackCutoff =
+    let chkFilter, trackFilter =
 
-        let label =
-            new Label(
-                Text = "Cutoff",
+        let chkFilter =
+            new CheckBox(
+                Text = "Filter",
+                Checked = true,
                 Location =
                     Point(
                         padding,
                         trackNote.Location.Y + trackNote.Height),
-                Width = labelWidth)
+                Width = labelWidth,
+                Appearance = Appearance.Button,
+                TextAlign = ContentAlignment.MiddleLeft)
                 |> Control.addTo this
 
-        new TrackBar(
-            Minimum = 1,
-            Maximum = 88,
-            Value = trackNote.Value + 2 * 12,
-            TickFrequency = 12,
-            SmallChange = 1,
-            LargeChange = 12,
-            Size = Size(this.ClientSize.Width - label.Width - 3 * padding, 0),
-            Location = Point(label.Width + padding, label.Location.Y))
-            |> Control.addTo this
+        let trackCuttof =
+            new TrackBar(
+                Minimum = 1,
+                Maximum = 88,
+                Value = trackNote.Value + 12,
+                TickFrequency = 12,
+                SmallChange = 1,
+                LargeChange = 12,
+                Size = Size(this.ClientSize.Width - chkFilter.Width - 3 * padding, 0),
+                Location = Point(chkFilter.Width + padding, chkFilter.Location.Y))
+                |> Control.addTo this
+
+        chkFilter, trackCuttof
 
     let getNoteFrequency note =
         440.0 * (2.0 ** ((1.0/12.0) * (float note - 49.0)))
@@ -79,10 +86,11 @@ type MainForm() as this =
         let label =
             new Label(
                 Text = "Control",
+                TextAlign = ContentAlignment.MiddleLeft,
                 Location =
                     Point(
                         padding,
-                        trackCutoff.Location.Y + trackCutoff.Height),
+                        trackFilter.Location.Y + trackFilter.Height),
                 Width = labelWidth)
                 |> Control.addTo this
 
@@ -126,7 +134,7 @@ type MainForm() as this =
     let getGain volume =
         float volume / (10.0 * float trackVolume.Maximum)
 
-    let makeSynth noteFreq cutoffFreq ctrlType ctrlFreq gain =
+    let makeSynth noteFreq filterFreqOpt ctrlType ctrlFreq gain =
         let note = Synth.oscSawtooth noteFreq
         let ctrl =
             match ctrlType with
@@ -134,8 +142,15 @@ type MainForm() as this =
                 | ControlType.Sine -> Synth.oscSine ctrlFreq
                 | ControlType.Sawtooth -> Synth.oscSawtooth ctrlFreq
                 | _ -> failwith "Unexpected"
-        let resonance = 0.5
-        (note &&& ctrl) >>> Synth.moogVcf 44100.0 cutoffFreq resonance
+        let pipeline =
+            match filterFreqOpt with
+                | Some filterFreq ->
+                    let resonance = 0.5
+                    (note &&& ctrl)
+                        >>> Synth.moogVcf 44100.0 filterFreq resonance
+                | None ->
+                    ctrl >>> note
+        pipeline
             >>^ (*) gain
             |> Synth
 
@@ -154,18 +169,22 @@ type MainForm() as this =
         engine.RemoveAllInputs()
         if btnPlay.Checked then
             let noteFreq = getNoteFrequency trackNote.Value
-            let cutoffFreq = getNoteFrequency trackCutoff.Value
+            let filterFreqOpt =
+                if chkFilter.Checked then
+                    getNoteFrequency trackFilter.Value |> Some
+                else None
             let ctrlType = ControlType.Sine
             let ctrlFreq = getControlFrequency trackControl.Value
             let gain = getGain trackVolume.Value
-            makeSynth noteFreq cutoffFreq ctrlType ctrlFreq gain
+            makeSynth noteFreq filterFreqOpt ctrlType ctrlFreq gain
                 |> engine.AddInput
 
     do
         [
             btnPlay.CheckedChanged
             trackNote.ValueChanged
-            trackCutoff.ValueChanged
+            chkFilter.CheckedChanged
+            trackFilter.ValueChanged
             trackControl.ValueChanged
             trackVolume.ValueChanged
         ] |> Seq.iter (fun evt -> evt.Add(onParamChanged))
