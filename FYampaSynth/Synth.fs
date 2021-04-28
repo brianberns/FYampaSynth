@@ -7,12 +7,14 @@ type Frequency = float
 type ControlValue = float
 type Sample = float
 
+module Sample =
+    let rate = 44100   // samples/second (CD quality)
+
 /// Synthesizes sound using the given signal function.
 type Synth(sf) =
 
     let numChannels = 2
-    let sampleRate = 44100
-    let dt = 1.0 / float sampleRate
+    let dt = 1.0 / float Sample.rate
 
     /// Populates the given buffer using the given signal function.
     let read sf (buffer : float32[]) offset count =
@@ -33,7 +35,7 @@ type Synth(sf) =
     interface ISampleProvider with
 
         member __.WaveFormat =
-            WaveFormat.CreateIeeeFloatWaveFormat(sampleRate, numChannels)
+            WaveFormat.CreateIeeeFloatWaveFormat(Sample.rate, numChannels)
 
         member __.Read(buffer, offset, count) =
             sfCur <- read sfCur buffer offset count
@@ -70,7 +72,7 @@ module Synth =
             >>^ (fun x -> 2.0 * (x - floor x) - 1.0)
 
     /// Moog transistor ladder filter.
-    let moogVcf sr f0 r : SignalFunction<Sample * ControlValue, ControlValue> =
+    let moogVcf f0 r : SignalFunction<Sample * ControlValue, ControlValue> =
 
         let moogAux =
             let vt = 2.0 * 20000.0      // thermal voltage
@@ -80,6 +82,7 @@ module Synth =
                 |> loop 0.0
 
         let g =
+            let sr = float Sample.rate
             arr (fun cv ->
                 let f = f0 * (2.0 ** cv)
                 1.0 - exp (-2.0 * pi * f / sr))

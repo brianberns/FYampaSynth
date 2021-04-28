@@ -5,11 +5,12 @@ open System
 open NAudio.Wave
 open NAudio.Wave.SampleProviders
 
+/// https://markheath.net/post/fire-and-forget-audio-playback-with
 type AudioEngine() =
 
     let output = new WaveOutEvent()
     let mixer =
-        let format = WaveFormat.CreateIeeeFloatWaveFormat(44100, 2)
+        let format = WaveFormat.CreateIeeeFloatWaveFormat(Sample.rate, 2)
         MixingSampleProvider(format, ReadFully = true)
 
     do

@@ -201,7 +201,7 @@ type MainForm() as this =
                 | Some filterFreq ->
                     let resonance = 0.5
                     (note &&& ctrl)
-                        >>> Synth.moogVcf 44100.0 filterFreq resonance
+                        >>> Synth.moogVcf filterFreq resonance
                 | None ->
                     ctrl >>> note
         pipeline
