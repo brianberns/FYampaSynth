@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>Library</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Include="SignalFunction.fs" />
     <Compile Include="Synth.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="AudioEngine.fs" />
   </ItemGroup>
 
   <ItemGroup>
