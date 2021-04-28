@@ -87,7 +87,7 @@ type MainForm() as this =
     let getNoteFrequency note =
         440.0 * (2.0 ** ((1.0/12.0) * (float note - 49.0)))
         
-    let pnlControlType, trackControl =
+    let rbControlTypes, trackControl =
 
         let label =
             new Label(
@@ -100,25 +100,27 @@ type MainForm() as this =
                 Width = labelWidth)
                 |> Control.addTo this
 
-        let pnlControlType =
+        let panel =
             new Panel(
                 Size = Size(80, 60),
                 Location = Point(label.Width + padding, label.Location.Y))
                 |> Control.addTo this
         let ctrlTypes =
-            [
+            [|
                 ControlType.Constant
                 ControlType.Sine
                 ControlType.Sawtooth
-            ]
-        for ctrlType in ctrlTypes do
-            new RadioButton(
-                Checked = (ctrlType = ControlType.Sine),
-                Text = string ctrlType,
-                Tag = ctrlType,
-                Location = Point(padding, 20 * int ctrlType))
-                |> Control.addTo pnlControlType
-                |> ignore
+            |]
+
+        let rbControlTypes =
+            ctrlTypes
+                |> Array.map (fun ctrlType ->
+                    new RadioButton(
+                        Checked = (ctrlType = ControlType.Sine),
+                        Text = string ctrlType,
+                        Tag = ctrlType,
+                        Location = Point(padding, 20 * int ctrlType))
+                        |> Control.addTo panel)
 
         let trackControl =
             new TrackBar(
@@ -130,15 +132,15 @@ type MainForm() as this =
                 LargeChange = 4,
                 Size =
                     Size(
-                        this.ClientSize.Width - pnlControlType.Location.X - pnlControlType.Width - padding,
+                        this.ClientSize.Width - panel.Location.X - panel.Width - padding,
                         0),
                 Location =
                     Point(
-                        pnlControlType.Location.X + pnlControlType.Width,
+                        panel.Location.X + panel.Width,
                         label.Location.Y))
                 |> Control.addTo this
 
-        pnlControlType, trackControl
+        rbControlTypes, trackControl
 
     let getControlFrequency value =
         2.0 ** (float value / 4.0)
@@ -146,12 +148,13 @@ type MainForm() as this =
     let trackVolume =
 
         let label =
+            let panel = rbControlTypes.[0].Parent
             new Label(
                 Text = "Volume",
                 Location =
                     Point(
                         padding,
-                        pnlControlType.Location.Y + pnlControlType.Height),
+                        panel.Location.Y + panel.Height),
                 Width = labelWidth)
                 |> Control.addTo this
 
@@ -211,7 +214,11 @@ type MainForm() as this =
                 if chkFilter.Checked then
                     getNoteFrequency trackFilter.Value |> Some
                 else None
-            let ctrlType = ControlType.Sine
+            let ctrlType =
+                rbControlTypes
+                    |> Seq.where (fun rb -> rb.Checked)
+                    |> Seq.map (fun rb -> rb.Tag :?> ControlType)
+                    |> Seq.exactlyOne
             let ctrlFreq = getControlFrequency trackControl.Value
             let gain = getGain trackVolume.Value
             makeSynth noteFreq filterFreqOpt ctrlType ctrlFreq gain
@@ -228,5 +235,7 @@ type MainForm() as this =
             trackFilter.ValueChanged
             trackControl.ValueChanged
             trackVolume.ValueChanged
+            yield! rbControlTypes
+                |> Seq.map (fun rb -> rb.CheckedChanged)
         ] |> Seq.iter (fun evt -> evt.Add(onParamChanged))
         this.Load.Add(onLoad)
