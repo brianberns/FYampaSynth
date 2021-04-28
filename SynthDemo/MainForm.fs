@@ -84,8 +84,8 @@ type MainForm() as this =
 
         chkFilter, trackCuttof
 
-    let getNoteFrequency note =
-        440.0 * (2.0 ** ((1.0/12.0) * (float note - 49.0)))
+    let getNoteFrequency pianoNoteNum =
+        440.0 * (2.0 ** ((float pianoNoteNum - 49.0) / 12.0))
         
     let rbControlTypes, trackControl =
 
