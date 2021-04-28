@@ -113,7 +113,6 @@ module Synth =
 
         second g >>> pipeline
 
-    (*
     let envGenAux (l0 : ControlValue) (tls : List<Time * ControlValue>) : SignalFunction<'a, ControlValue> =
 
         let rec trAux (t : Time) (l : ControlValue) = function
@@ -127,8 +126,7 @@ module Synth =
             | [] -> 0.0, []
 
         let r0, trs = toRates l0 tls
-        afterEach trs
-            >>> hold r0
+        Event.afterEach trs
+            >>> Event.hold r0
             >>> integral
             >>> arr ((+) l0)
-    *)
