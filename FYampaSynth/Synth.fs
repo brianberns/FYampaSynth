@@ -8,7 +8,9 @@ type ControlValue = float
 type Sample = float
 
 module Sample =
-    let rate = 44100   // samples/second (CD quality)
+
+    /// Samples/second.
+    let rate = 44100   // CD quality
 
 /// Synthesizes sound using the given signal function.
 type Synth(sf) =
@@ -22,7 +24,7 @@ type Synth(sf) =
         let numSamples = count / numChannels
         (sf, seq { 0 .. numSamples - 1 })
             ||> Seq.fold (fun (SF tf) iSample ->
-                let sf', (sample : float) = tf dt 0.0
+                let sf', (sample : float) = tf dt 0.0   // feed zeros in for now
                 let sample = float32 sample
                 let idx = numChannels * (offset + iSample)
                 for iChannel = 0 to numChannels - 1 do
