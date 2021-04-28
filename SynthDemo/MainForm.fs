@@ -21,7 +21,7 @@ type ControlType =
 type MainForm() as this =
     inherit Form(
         Text = "Moog Demo",
-        Size = Size(800, 400),
+        Size = Size(800, 300),
         FormBorderStyle = FormBorderStyle.Fixed3D,
         StartPosition = FormStartPosition.CenterScreen)
 
@@ -175,6 +175,19 @@ type MainForm() as this =
     let getGain volume =
         float volume / (10.0 * float trackVolume.Maximum)
 
+    let btnPlay =
+        let width = 100
+        new CheckBox(
+            Text = "Play",
+            Size = Size(width, 40),
+            Location =
+                Point(
+                    (this.ClientSize.Width - width) / 2,
+                    trackVolume.Location.Y + trackVolume.Height),
+            Appearance = Appearance.Button,
+            TextAlign = ContentAlignment.MiddleCenter)
+            |> Control.addTo this
+
     let makeSynth noteFreq filterFreqOpt ctrlType ctrlFreq gain =
         let note = Synth.oscSawtooth noteFreq
         let ctrl =
@@ -194,15 +207,6 @@ type MainForm() as this =
         pipeline
             >>^ (*) gain
             |> Synth
-
-    let btnPlay =
-        new CheckBox(
-            Text = "Play",
-            Size = Size(100, 40),
-            Location = Point(100, 250),
-            Appearance = Appearance.Button,
-            TextAlign = ContentAlignment.MiddleCenter)
-            |> Control.addTo this
 
     let engine = new AudioEngine()
 
