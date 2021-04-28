@@ -45,7 +45,10 @@ type MainForm() as this =
             TickFrequency = 12,
             SmallChange = 1,
             LargeChange = 12,
-            Size = Size(this.ClientSize.Width - label.Width - 3 * padding, 0),
+            Size =
+                Size(
+                    this.ClientSize.Width - label.Location.X - label.Width - padding,
+                    0),
             Location = Point(label.Width + padding, label.Location.Y))
             |> Control.addTo this
 
@@ -72,7 +75,10 @@ type MainForm() as this =
                 TickFrequency = 12,
                 SmallChange = 1,
                 LargeChange = 12,
-                Size = Size(this.ClientSize.Width - chkFilter.Width - 3 * padding, 0),
+                Size =
+                    Size(
+                        this.ClientSize.Width - chkFilter.Location.X - chkFilter.Width - padding,
+                        0),
                 Location = Point(chkFilter.Width + padding, chkFilter.Location.Y))
                 |> Control.addTo this
 
@@ -81,7 +87,7 @@ type MainForm() as this =
     let getNoteFrequency note =
         440.0 * (2.0 ** ((1.0/12.0) * (float note - 49.0)))
         
-    let trackControl =
+    let pnlControlType, trackControl =
 
         let label =
             new Label(
@@ -94,16 +100,45 @@ type MainForm() as this =
                 Width = labelWidth)
                 |> Control.addTo this
 
-        new TrackBar(
-            Minimum = -8,
-            Maximum = 8,
-            Value = 0,
-            TickFrequency = 4,
-            SmallChange = 1,
-            LargeChange = 4,
-            Size = Size(this.ClientSize.Width - label.Width - 3 * padding, 0),
-            Location = Point(label.Width + padding, label.Location.Y))
-            |> Control.addTo this
+        let pnlControlType =
+            new Panel(
+                Size = Size(80, 60),
+                Location = Point(label.Width + padding, label.Location.Y))
+                |> Control.addTo this
+        let ctrlTypes =
+            [
+                ControlType.Constant
+                ControlType.Sine
+                ControlType.Sawtooth
+            ]
+        for ctrlType in ctrlTypes do
+            new RadioButton(
+                Checked = (ctrlType = ControlType.Sine),
+                Text = string ctrlType,
+                Tag = ctrlType,
+                Location = Point(padding, 20 * int ctrlType))
+                |> Control.addTo pnlControlType
+                |> ignore
+
+        let trackControl =
+            new TrackBar(
+                Minimum = -8,
+                Maximum = 8,
+                Value = 0,
+                TickFrequency = 4,
+                SmallChange = 1,
+                LargeChange = 4,
+                Size =
+                    Size(
+                        this.ClientSize.Width - pnlControlType.Location.X - pnlControlType.Width - padding,
+                        0),
+                Location =
+                    Point(
+                        pnlControlType.Location.X + pnlControlType.Width,
+                        label.Location.Y))
+                |> Control.addTo this
+
+        pnlControlType, trackControl
 
     let getControlFrequency value =
         2.0 ** (float value / 4.0)
@@ -116,7 +151,7 @@ type MainForm() as this =
                 Location =
                     Point(
                         padding,
-                        trackControl.Location.Y + trackControl.Height),
+                        pnlControlType.Location.Y + pnlControlType.Height),
                 Width = labelWidth)
                 |> Control.addTo this
 
@@ -127,7 +162,10 @@ type MainForm() as this =
             TickFrequency = 1,
             SmallChange = 1,
             LargeChange = 1,
-            Size = Size(this.ClientSize.Width - label.Width - 3 * padding, 0),
+            Size =
+                Size(
+                    this.ClientSize.Width - label.Location.X - label.Width - padding,
+                    0),
             Location = Point(label.Width + padding, label.Location.Y))
             |> Control.addTo this
 
@@ -158,7 +196,7 @@ type MainForm() as this =
         new CheckBox(
             Text = "Play",
             Size = Size(100, 40),
-            Location = Point(100, 200),
+            Location = Point(100, 250),
             Appearance = Appearance.Button,
             TextAlign = ContentAlignment.MiddleCenter)
             |> Control.addTo this
