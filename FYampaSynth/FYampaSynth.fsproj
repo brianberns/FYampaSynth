@@ -9,6 +9,7 @@
     <Compile Include="SignalFunction.fs" />
     <Compile Include="Event.fs" />
     <Compile Include="Synth.fs" />
+    <Compile Include="Midi.fs" />
     <Compile Include="AudioEngine.fs" />
   </ItemGroup>
 

@@ -39,9 +39,9 @@ type MainForm() as this =
                 |> Control.addTo this
 
         new TrackBar(
-            Minimum = 1,
-            Maximum = 88,
-            Value = 49,
+            Minimum = 21,
+            Maximum = 108,
+            Value = 69,
             TickFrequency = 12,
             SmallChange = 1,
             LargeChange = 12,
@@ -69,8 +69,8 @@ type MainForm() as this =
 
         let trackCuttof =
             new TrackBar(
-                Minimum = 1,
-                Maximum = 88,
+                Minimum = 21,
+                Maximum = 108,
                 Value = trackNote.Value + 12,
                 TickFrequency = 12,
                 SmallChange = 1,
@@ -83,9 +83,6 @@ type MainForm() as this =
                 |> Control.addTo this
 
         chkFilter, trackCuttof
-
-    let getNoteFrequency pianoNoteNum =
-        440.0 * (2.0 ** ((float pianoNoteNum - 49.0) / 12.0))
         
     let rbControlTypes, trackControl =
 
@@ -213,10 +210,10 @@ type MainForm() as this =
     let onParamChanged _ =
         engine.RemoveAllInputs()
         if btnPlay.Checked then
-            let noteFreq = getNoteFrequency trackNote.Value
+            let noteFreq = Midi.toFreq trackNote.Value
             let filterFreqOpt =
                 if chkFilter.Checked then
-                    getNoteFrequency trackFilter.Value |> Some
+                    Midi.toFreq trackFilter.Value |> Some
                 else None
             let ctrlType =
                 rbControlTypes
