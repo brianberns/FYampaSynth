@@ -13,7 +13,8 @@ module Control =
         parent.Controls.Add(control)
         control
 
-type ControlType =
+/// Variation types.
+type VariationType =
     | Constant = 0
     | Sine = 1
     | Sawtooth = 2
@@ -26,8 +27,9 @@ type MainForm() as this =
         StartPosition = FormStartPosition.CenterScreen)
 
     let padding = 10
-    let labelWidth = 50
+    let labelWidth = 55
 
+    /// Slider that determines note to play.
     let trackNote =
 
         let label =
@@ -47,11 +49,17 @@ type MainForm() as this =
             LargeChange = 12,
             Size =
                 Size(
-                    this.ClientSize.Width - label.Location.X - label.Width - padding,
+                    this.ClientSize.Width
+                        - label.Location.X
+                        - label.Width
+                        - padding,
                     0),
-            Location = Point(label.Width + padding, label.Location.Y))
+            Location =
+                Point(label.Width + padding, label.Location.Y))
             |> Control.addTo this
 
+    /// Slider that determines filter cutoff (i.e. "corner")
+    /// frequency.
     let chkFilter, trackFilter =
 
         let chkFilter =
@@ -77,18 +85,23 @@ type MainForm() as this =
                 LargeChange = 12,
                 Size =
                     Size(
-                        this.ClientSize.Width - chkFilter.Location.X - chkFilter.Width - padding,
+                        this.ClientSize.Width
+                            - chkFilter.Location.X
+                            - chkFilter.Width
+                            - padding,
                         0),
-                Location = Point(chkFilter.Width + padding, chkFilter.Location.Y))
+                Location =
+                    Point(chkFilter.Width + padding, chkFilter.Location.Y))
                 |> Control.addTo this
 
         chkFilter, trackCuttof
-        
-    let rbControlTypes, trackControl =
+       
+    /// Slider that determines variation frequency.
+    let rbVariationTypes, trackVariation =
 
         let label =
             new Label(
-                Text = "Control",
+                Text = "Variation",
                 TextAlign = ContentAlignment.MiddleLeft,
                 Location =
                     Point(
@@ -100,26 +113,27 @@ type MainForm() as this =
         let panel =
             new Panel(
                 Size = Size(80, 60),
-                Location = Point(label.Width + padding, label.Location.Y))
+                Location =
+                    Point(label.Width + padding, label.Location.Y))
                 |> Control.addTo this
-        let ctrlTypes =
+        let variationTypes =
             [|
-                ControlType.Constant
-                ControlType.Sine
-                ControlType.Sawtooth
+                VariationType.Constant
+                VariationType.Sine
+                VariationType.Sawtooth
             |]
 
-        let rbControlTypes =
-            ctrlTypes
-                |> Array.map (fun ctrlType ->
+        let rbVariationTypes =
+            variationTypes
+                |> Array.map (fun variType ->
                     new RadioButton(
-                        Checked = (ctrlType = ControlType.Sine),
-                        Text = string ctrlType,
-                        Tag = ctrlType,
-                        Location = Point(padding, 20 * int ctrlType))
+                        Checked = (variType = VariationType.Sine),
+                        Text = string variType,
+                        Tag = variType,
+                        Location = Point(padding, 20 * int variType))
                         |> Control.addTo panel)
 
-        let trackControl =
+        let trackVariation =
             new TrackBar(
                 Minimum = -8,
                 Maximum = 8,
@@ -129,7 +143,10 @@ type MainForm() as this =
                 LargeChange = 4,
                 Size =
                     Size(
-                        this.ClientSize.Width - panel.Location.X - panel.Width - padding,
+                        this.ClientSize.Width
+                            - panel.Location.X
+                            - panel.Width
+                            - padding,
                         0),
                 Location =
                     Point(
@@ -137,15 +154,17 @@ type MainForm() as this =
                         label.Location.Y))
                 |> Control.addTo this
 
-        rbControlTypes, trackControl
+        rbVariationTypes, trackVariation
 
-    let getControlFrequency value =
+    /// Converts variation to frequency on a logarithmic scale.
+    let getVariationFrequency value =
         2.0 ** (float value / 4.0)
 
+    /// Slider that determines volume.
     let trackVolume =
 
         let label =
-            let panel = rbControlTypes.[0].Parent
+            let panel = rbVariationTypes.[0].Parent
             new Label(
                 Text = "Volume",
                 Location =
@@ -169,9 +188,11 @@ type MainForm() as this =
             Location = Point(label.Width + padding, label.Location.Y))
             |> Control.addTo this
 
+    /// Converts volume to gain.
     let getGain volume =
         float volume / (10.0 * float trackVolume.Maximum)
 
+    /// On/Off button.
     let btnPlay =
         let width = 100
         new CheckBox(
@@ -185,28 +206,30 @@ type MainForm() as this =
             TextAlign = ContentAlignment.MiddleCenter)
             |> Control.addTo this
 
-    let makeSynth noteFreq filterFreqOpt ctrlType ctrlFreq gain =
+    /// Builds a Moog synthesizer from the given values.
+    let makeSynth noteFreq filterFreqOpt variType variFreq gain =
         let note = Synth.oscSawtooth noteFreq
-        let ctrl =
-            match ctrlType with
-                | ControlType.Constant -> constant 0.0
-                | ControlType.Sine -> Synth.oscSine ctrlFreq
-                | ControlType.Sawtooth -> Synth.oscSawtooth ctrlFreq
+        let variation =
+            match variType with
+                | VariationType.Constant -> constant 0.0
+                | VariationType.Sine -> Synth.oscSine variFreq
+                | VariationType.Sawtooth -> Synth.oscSawtooth variFreq
                 | _ -> failwith "Unexpected"
         let pipeline =
             match filterFreqOpt with
                 | Some filterFreq ->
                     let resonance = 0.5
-                    (note &&& ctrl)
+                    (note &&& variation)
                         >>> Synth.moogVcf filterFreq resonance
                 | None ->
-                    ctrl >>> note
+                    variation >>> note
         pipeline
             >>^ (*) gain
             |> Synth
 
     let engine = new AudioEngine()
 
+    /// Rebuild synthesizer when a parameter has changed.
     let onParamChanged _ =
         engine.RemoveAllInputs()
         if btnPlay.Checked then
@@ -215,14 +238,14 @@ type MainForm() as this =
                 if chkFilter.Checked then
                     Midi.toFreq trackFilter.Value |> Some
                 else None
-            let ctrlType =
-                rbControlTypes
+            let variType =
+                rbVariationTypes
                     |> Seq.where (fun rb -> rb.Checked)
-                    |> Seq.map (fun rb -> rb.Tag :?> ControlType)
+                    |> Seq.map (fun rb -> rb.Tag :?> VariationType)
                     |> Seq.exactlyOne
-            let ctrlFreq = getControlFrequency trackControl.Value
+            let variFreq = getVariationFrequency trackVariation.Value
             let gain = getGain trackVolume.Value
-            makeSynth noteFreq filterFreqOpt ctrlType ctrlFreq gain
+            makeSynth noteFreq filterFreqOpt variType variFreq gain
                 |> engine.AddInput
 
     let onLoad _ =
@@ -234,9 +257,9 @@ type MainForm() as this =
             trackNote.ValueChanged
             chkFilter.CheckedChanged
             trackFilter.ValueChanged
-            trackControl.ValueChanged
+            trackVariation.ValueChanged
             trackVolume.ValueChanged
-            yield! rbControlTypes
+            yield! rbVariationTypes
                 |> Seq.map (fun rb -> rb.CheckedChanged)
         ] |> Seq.iter (fun evt -> evt.Add(onParamChanged))
         this.Load.Add(onLoad)
