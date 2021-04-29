@@ -70,3 +70,7 @@ module Event =
 
     let after q x =
         afterEach [q, x]
+
+    /// Suppresses an initial event.
+    let notYet<'a> : SignalFunction<Event<'a>, Event<'a>> =
+        initially NoEvt

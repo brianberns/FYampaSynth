@@ -202,3 +202,12 @@ module Arrow =
         let rec loop prev =
             SF (fun _ cur -> loop cur, prev)
         loop fill
+
+    /// Outputs the given value now, and then behaves like the
+    /// given signal function.
+    let (-->) b sf =
+        SF (fun _ _ -> sf, b)
+
+    /// Overrides the initial value of the input signal.
+    let initially a =
+        a --> identity

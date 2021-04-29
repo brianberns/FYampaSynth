@@ -206,6 +206,13 @@ type MainForm() as this =
             TextAlign = ContentAlignment.MiddleCenter)
             |> Control.addTo this
 
+    let btnTest =
+        new Button(
+            Text = "Test",
+            Size = btnPlay.Size,
+            Location = btnPlay.Location + Size(btnPlay.Width + padding, 0))
+            |> Control.addTo this
+
     /// Builds a Moog synthesizer from the given values.
     let makeSynth noteFreq filterFreqOpt variType variFreq gain =
         let note = Synth.oscSawtooth noteFreq
@@ -251,6 +258,30 @@ type MainForm() as this =
     let onLoad _ =
         btnPlay.Select()
 
+    let onTest _ =
+
+        let envBell =
+            Synth.envGen 0.0 [0.1, 1.0; 1.5, 0.0] None
+
+        let playNote freq =
+            (Synth.oscSine 5.0
+                >>^ ((*) 0.5)
+                >>> Synth.oscSine freq)
+                &&& (constant NoEvt >>> envBell)
+
+        let playNotes =
+
+            let rec playNotesRec freq =
+                Event.switch
+                    (playNote freq &&& Event.notYet)
+                    playNotesRec
+
+            Event.switch
+                (constant 0.0 &&& identity)
+                playNotesRec
+
+        playNote (Midi.toFreq trackNote.Value)
+
     do
         [
             btnPlay.CheckedChanged
@@ -263,3 +294,4 @@ type MainForm() as this =
                 |> Seq.map (fun rb -> rb.CheckedChanged)
         ] |> Seq.iter (fun evt -> evt.Add(onParamChanged))
         this.Load.Add(onLoad)
+        btnTest.Click.Add(onTest)
