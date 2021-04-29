@@ -113,16 +113,18 @@ module Synth =
 
         second g >>> pipeline
 
-    let envGenAux (l0 : ControlValue) (tls : List<Time * ControlValue>) : SignalFunction<'a, ControlValue> =
+    let private envGenAux l0 tls =
 
         let rec trAux (t : Time) (l : ControlValue) = function
             | (t', l') :: tls ->
-                (t, ((l' - l) / t' : float)) :: trAux t' l' tls
+                let r : float = (l' - l) / t'
+                (t, r) :: trAux t' l' tls
             | [] -> [t, 0.0]
 
         let toRates (l0 : ControlValue) = function
             | (t, l) :: tls ->
-                (((l - l0) / t : float), trAux t l tls)
+                let r : float = (l - l0) / t
+                r, trAux t l tls
             | [] -> 0.0, []
 
         let r0, trs = toRates l0 tls
@@ -130,3 +132,17 @@ module Synth =
             >>> Event.hold r0
             >>> integral
             >>> arr ((+) l0)
+
+    let envGen l0 tls = function
+        | Some n ->
+            let tls1, tls2 = List.splitAt n tls
+            Event.switch
+                (envGenAux l0 tls1 &&& identity
+                    >>> arr (fun (l, (noteOff : Event<Unit>)) ->
+                            (l, NoEvt), noteOff |> Event.tag l))
+                (fun l ->
+                    envGenAux l tls2
+                        &&& Event.after (tls2 |> List.sumBy fst) ())
+        | None ->
+            envGenAux l0 tls
+                &&& Event.after (tls |> List.sumBy fst) ()

@@ -35,9 +35,10 @@ module Event =
                     | NoEvt -> switch sf' f
             sf'', b)
 
-    let rec afterEachCat (qxs : List<Time * 'b>) : SignalFunction<'a, Event<List<'b>>> =
+    // https://hackage.haskell.org/package/Yampa-0.13.1/docs/src/FRP.Yampa.EventS.html
+    let rec afterEachCat qxs =
 
-        let rec emitEventsScheduleNext t xs = function
+        let rec emitEventsScheduleNext (t : Time) xs = function
             | (q, x) :: qxs ->
                 if q < 0.0 then failwith "Unexpected"
                 else
@@ -48,7 +49,7 @@ module Event =
                         awaitNextEvent t' x qxs, Evt (List.rev xs)
             | [] -> never, Evt (List.rev xs)
 
-        and awaitNextEvent t x qxs =
+        and awaitNextEvent (t : Time) x qxs =
             SF (fun dt _ ->
                 let t' = t + dt
                 if t' >= 0.0 then
@@ -57,12 +58,15 @@ module Event =
                     awaitNextEvent t' x qxs, NoEvt)
 
         match qxs with
-            | (q, x) :: tail ->
+            | (q : Time, x) :: tail ->
                 SF (fun _ _ ->
                     if q < 0.0 then failwith "Unexpected"
                     elif q <= 0.0 then emitEventsScheduleNext 0.0 [x] tail
                     else awaitNextEvent -q x qxs, NoEvt)
             | [] -> never
 
-    let afterEach (qxs : List<Time * 'b>) : SignalFunction<'a, Event<'b>> =
+    let afterEach qxs =
         afterEachCat qxs >>> arr (map List.head)
+
+    let after q x =
+        afterEach [q, x]
