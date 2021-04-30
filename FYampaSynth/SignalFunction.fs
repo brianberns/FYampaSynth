@@ -17,6 +17,7 @@ and TransitionFunction<'a, 'b> =
         -> (SignalFunction<'a, 'b> * 'b)   // updated signal function * current output
 
 /// Arrow implementation.
+// https://wiki.haskell.org/Arrow_tutorial
 module Arrow =
 
     /// Creates a signal function from a plain function.

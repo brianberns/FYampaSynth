@@ -114,3 +114,10 @@ type EventTest() =
             ]
         let actual = Test.run [ 0; 0; 0; 0; 0 ] sf
         Assert.AreEqual(expected, actual)
+
+    [<TestMethod>]
+    member __.NotYet() =
+        let sf = arr Evt >>> Event.notYet
+        Assert.AreEqual(
+            [ NoEvt; Evt 2; Evt 3 ],
+            Test.run [ 1; 2; 3 ] sf)
