@@ -81,3 +81,17 @@ type EventTest() =
                 Evt 2
                 Evt 3
                 NoEvt ] sf)
+
+    [<TestMethod>]
+    member __.Switch() =
+        let sf =
+            identity &&&
+                arr (fun n ->
+                    if n % 5 = 0 then Evt (n / 5)
+                    else NoEvt)
+        let f x = arr (fun y -> x + y)
+        Assert.AreEqual(
+            [8; 9; 12; 13; 14],
+            Test.run
+                [8; 9; 10; 11; 12]
+                (Event.switch sf f))

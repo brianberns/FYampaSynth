@@ -31,14 +31,16 @@ module Event =
                 | Evt a' -> hold a', a'
                 | NoEvt -> hold a, a)
 
-    let rec switch (SF tf) f =
+    /// Emits values from the given signal function until an event
+    /// occurs, then switches to a different signal function.
+    let rec switch (SF tf : SignalFunction<'a, 'b * Event<'c>>) (f : 'c -> SignalFunction<'a, 'b>) : SignalFunction<'a, 'b> =
         SF (fun dt a ->
             let sf', (b, evt) = tf dt a
-            let sf'' =
-                match evt with
-                    | Evt c -> f c
-                    | NoEvt -> switch sf' f
-            sf'', b)
+            match evt with
+                | Evt c ->
+                    let (SF tf) = f c
+                    tf dt a   // use new signal function's output immediately
+                | NoEvt -> switch sf' f, b)
 
     // https://hackage.haskell.org/package/Yampa-0.13.1/docs/src/FRP.Yampa.EventS.html
     let rec afterEachCat qxs =
