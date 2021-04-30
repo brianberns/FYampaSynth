@@ -262,11 +262,14 @@ type MainForm() as this =
                 (constant 0.0 &&& identity)
                 playNotesRec
 
+        (*
         let notes =
             [(0.0, 60); (2.0, 62); (2.0, 64); (2.0, 65); (2.0, 67); (2.0, 69); (2.0, 71); (2.0, 72)]
                 |> List.map (fun (time, note) -> time, Midi.toFreq note)
         Event.afterEach notes
             >>> playNotes
+        *)
+        playNote (Midi.toFreq trackNote.Value)
             >>^ (*) gain
             |> Synth
 
