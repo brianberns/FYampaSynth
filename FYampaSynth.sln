@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FYampaSynth", "FYampaSynth\FYampaSynth.fsproj", "{69A63DD5-ED63-4443-8C03-99ECB4B5B2EE}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "SynthDemo", "SynthDemo\SynthDemo.fsproj", "{53334609-CAED-4DBD-BD95-E2AFAE3A2673}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "MoogDemo", "MoogDemo\MoogDemo.fsproj", "{53334609-CAED-4DBD-BD95-E2AFAE3A2673}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FYampaSynth.Test", "FYampaSynth.Test\FYampaSynth.Test.fsproj", "{A6DBD586-67AD-44F9-83E9-E17B411ACC8B}"
 EndProject
