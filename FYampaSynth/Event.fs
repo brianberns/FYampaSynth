@@ -4,22 +4,27 @@ open Arrow
 
 type Time = float
 
+/// An event occurs or it doesn't.
 type Event<'a> =
     | Evt of 'a
     | NoEvt
 
 module Event =
 
+    /// Maps the given function over an event.
     let map f = function
         | Evt a -> Evt (f a)
         | NoEvt -> NoEvt
 
+    /// Tags an event occurrence with the given value.
     let tag value =
         map (fun _ -> value)
 
+    /// No event ever occurs.
     let rec never =
         SF (fun _ _ -> never, NoEvt)
 
+    /// Repeats the given value until an event occurs.
     let rec hold a =
         SF (fun _ evt ->
             match evt with

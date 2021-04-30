@@ -4,8 +4,7 @@ open Microsoft.VisualStudio.TestTools.UnitTesting
 open FYampaSynth
 open Arrow
 
-[<TestClass>]
-type SignalFunctionTest() =
+module Test =
 
     /// Runs the given signal function using the given inputs.
     let run inputs sf =
@@ -18,12 +17,15 @@ type SignalFunctionTest() =
                 | [] -> []
         loop inputs sf
 
+[<TestClass>]
+type SignalFunctionTest() =
+
     [<TestMethod>]
     member __.Arr() =
         let sf = arr (fun n -> 2 * n)
         Assert.AreEqual(
             [0; 2; 4],
-            run [0; 1; 2] sf)
+            Test.run [0; 1; 2] sf)
 
     [<TestMethod>]
     // fsharplint:disable ReimplementsFunction
@@ -32,10 +34,10 @@ type SignalFunctionTest() =
         let sf2 = arr (fun n -> string n)
         Assert.AreEqual(
             ["0"; "1"; "1"],
-            run [0.5; 1.0; 1.5] (sf1 >>> sf2))
+            Test.run [0.5; 1.0; 1.5] (sf1 >>> sf2))
         Assert.AreEqual(
             ["0"; "1"; "1"],
-            run [0.5; 1.0; 1.5] (sf2 <<< sf1))
+            Test.run [0.5; 1.0; 1.5] (sf2 <<< sf1))
 
     [<TestMethod>]
     member __.Parallel() =
@@ -45,10 +47,10 @@ type SignalFunctionTest() =
         let input2 = [3; 2; 1]
         Assert.AreEqual(
             [(false, true); (false, false); (true, true)],
-            run (List.zip input1 input2) (sf1 *** sf2))
+            Test.run (List.zip input1 input2) (sf1 *** sf2))
         Assert.AreEqual(
             [(false, true); (false, true); (true, false)],
-            run input1 (sf1 &&& sf2))
+            Test.run input1 (sf1 &&& sf2))
 
     [<TestMethod>]
     // 3 + 10, 3 - 10 -> 13, -7
@@ -60,4 +62,22 @@ type SignalFunctionTest() =
                 |> loop 10
         Assert.AreEqual(
             [13; -6; 12],
-            run [3; 1; 4] sf)
+            Test.run [3; 1; 4] sf)
+
+[<TestClass>]
+type EventTest() =
+
+    [<TestMethod>]
+    member __.Hold() =
+        let sf = Event.hold 0
+        Assert.AreEqual(
+            [0; 0; 1; 1; 1; 2; 3; 3],
+            Test.run [
+                NoEvt
+                NoEvt
+                Evt 1
+                NoEvt
+                Evt 1
+                Evt 2
+                Evt 3
+                NoEvt ] sf)
