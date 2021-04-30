@@ -24,7 +24,8 @@ module Event =
     let rec never =
         SF (fun _ _ -> never, NoEvt)
 
-    /// Repeats the given value until an event occurs.
+    /// Repeats the given value until an event occurs, then holds
+    /// that event's value.
     let rec hold a =
         SF (fun _ evt ->
             match evt with
