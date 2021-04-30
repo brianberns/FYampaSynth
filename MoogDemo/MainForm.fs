@@ -241,10 +241,15 @@ type MainForm() as this =
 
         let playNote freq =
             let s =
+                (*
                 constant 0.0
                     >>> Synth.oscSine 5.0
                     >>^ ((*) 0.05)
                     >>> Synth.oscSine freq
+                *)
+                constant 0.0
+                    >>> (Synth.oscSawtooth freq &&& Synth.oscSine 0.6)
+                    >>> Synth.moogVcf (4.0 * freq) 0.5
             let e =
                 constant NoEvt
                     >>> envBell
@@ -296,7 +301,8 @@ type MainForm() as this =
 
     let onTest _ =
         engine.RemoveAllInputs()
-        makeBell 0.2 |> engine.AddInput
+        makeBell 0.6
+            |> engine.AddInput
 
     do
         [
