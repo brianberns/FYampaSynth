@@ -15,7 +15,10 @@ module Sample =
 /// Synthesizes sound using the given signal function.
 type Synth(sf) =
 
+    /// Stereo.
     let numChannels = 2
+
+    /// Amount of time between samples.
     let dt = 1.0 / float Sample.rate
 
     /// Populates the given buffer using the given signal function.
@@ -34,6 +37,7 @@ type Synth(sf) =
     /// Current state of the signal function.
     let mutable sfCur = sf
 
+    /// NAudio integration.
     interface ISampleProvider with
 
         member __.WaveFormat =
@@ -43,7 +47,8 @@ type Synth(sf) =
             sfCur <- read sfCur buffer offset count
             count
 
-/// https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.159.2277&rep=rep1&type=pdf
+/// Modular music synthesis.
+// https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.159.2277&rep=rep1&type=pdf
 module Synth =
 
     open Arrow
@@ -113,6 +118,9 @@ module Synth =
 
         second g >>> pipeline
 
+    /// Generates an envelope that describes how the volume of a note
+    /// evolves over time from the given start level and list of subsequent
+    /// time and control-value pairs.
     let private envGenAux l0 tls =
 
         let rec trAux (t : Time) (l : ControlValue) = function
@@ -133,8 +141,11 @@ module Synth =
             >>> integral
             >>> arr ((+) l0)
 
+    /// Generates an envelope that describes how the volume of a note
+    /// evolves over time from the given start level and list of subsequent
+    /// time and control-value pairs.
     let envGen l0 tls = function
-        | Some n ->
+        | Some n ->   // segment before which the sustain phase should be inserted
             let tls1, tls2 = List.splitAt n tls
             Event.switch
                 (envGenAux l0 tls1 &&& identity

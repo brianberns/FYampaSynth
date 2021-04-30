@@ -43,6 +43,8 @@ module Event =
                     tf' dt a   // use new signal function's output immediately
                 | NoEvt -> switch sf' f, b)
 
+    /// Converts the given duration-value pairs into events at or after
+    /// the given amount of time from the previous pair.
     // https://hackage.haskell.org/package/Yampa-0.13.1/docs/src/FRP.Yampa.EventS.html
     let rec afterEachCat qxs =
 
@@ -73,9 +75,12 @@ module Event =
                     else awaitNextEvent -q x tail, NoEvt)
             | [] -> never
 
+    /// Converts the given duration-value pairs into events at or after
+    /// the given amount of time from the previous pair.
     let afterEach qxs =
         afterEachCat qxs >>> arr (map List.head)
 
+    /// Emits the given value at or after the given amount of time.
     let after q x =
         afterEach [q, x]
 
