@@ -234,6 +234,43 @@ type MainForm() as this =
             >>^ (*) gain
             |> Synth
 
+    let makeBell gain =
+
+        let envBell =
+            Synth.envGen 0.0 [0.1, 1.0; 1.5, 0.0] None
+
+        let playNote freq =
+            let s =
+                constant 0.0
+                    >>> Synth.oscSine 5.0
+                    >>^ ((*) 0.5)
+                    >>> Synth.oscSine freq
+            let e =
+                constant NoEvt
+                    >>> envBell
+                    >>^ fst
+            (s &&& e) >>^ (fun (x, y) -> x * y)
+
+        let playNotes : SignalFunction<Event<Frequency>, Sample> =
+
+            let rec playNotesRec freq =
+                Event.switch
+                    (playNote freq &&& Event.notYet)
+                    playNotesRec
+
+            Event.switch
+                (constant 0.0 &&& identity)
+                playNotesRec
+
+        // playNote (Midi.toFreq trackNote.Value)
+        let notes =
+            [(0.0, 60); (2.0, 62); (2.0, 64); (2.0, 65); (2.0, 67); (2.0, 69); (2.0, 71); (2.0, 72)]
+                |> List.map (fun (time, note) -> time, Midi.toFreq note)
+        Event.afterEach notes
+            >>> playNotes
+            >>^ (*) gain
+            |> Synth
+
     let engine = new AudioEngine()
 
     /// Rebuild synthesizer when a parameter has changed.
@@ -259,28 +296,7 @@ type MainForm() as this =
         btnPlay.Select()
 
     let onTest _ =
-
-        let envBell =
-            Synth.envGen 0.0 [0.1, 1.0; 1.5, 0.0] None
-
-        let playNote freq =
-            (Synth.oscSine 5.0
-                >>^ ((*) 0.5)
-                >>> Synth.oscSine freq)
-                &&& (constant NoEvt >>> envBell)
-
-        let playNotes =
-
-            let rec playNotesRec freq =
-                Event.switch
-                    (playNote freq &&& Event.notYet)
-                    playNotesRec
-
-            Event.switch
-                (constant 0.0 &&& identity)
-                playNotesRec
-
-        playNote (Midi.toFreq trackNote.Value)
+        makeBell 0.2 |> engine.AddInput
 
     do
         [
