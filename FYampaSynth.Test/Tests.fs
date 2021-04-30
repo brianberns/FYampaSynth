@@ -95,3 +95,15 @@ type EventTest() =
             Test.run
                 [8; 9; 10; 11; 12]
                 (Event.switch sf f))
+
+    [<TestMethod>]
+    member __.AfterEach() =
+        let sf =
+            Event.afterEach
+                [
+                    1.5, "hello"
+                    3.0, "world"
+                ]
+        let expected = [ NoEvt; NoEvt; Evt "hello"; Evt "world"; NoEvt ]
+        let actual = Test.run [ 10; 11; 12; 13; 14 ] sf
+        Assert.AreEqual(expected, actual)

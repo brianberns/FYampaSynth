@@ -34,7 +34,7 @@ module Event =
 
     /// Emits values from the given signal function until an event
     /// occurs, then switches to a different signal function.
-    let rec switch (SF tf : SignalFunction<'a, 'b * Event<'c>>) (f : 'c -> SignalFunction<'a, 'b>) : SignalFunction<'a, 'b> =
+    let rec switch (SF tf) f =
         SF (fun dt a ->
             let sf', (b, evt) = tf dt a
             match evt with
