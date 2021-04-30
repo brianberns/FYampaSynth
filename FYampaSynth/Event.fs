@@ -38,8 +38,8 @@ module Event =
             let sf', (b, evt) = tf dt a
             match evt with
                 | Evt c ->
-                    let (SF tf) = f c
-                    tf dt a   // use new signal function's output immediately
+                    let (SF tf') = f c
+                    tf' dt a   // use new signal function's output immediately
                 | NoEvt -> switch sf' f, b)
 
     // https://hackage.haskell.org/package/Yampa-0.13.1/docs/src/FRP.Yampa.EventS.html
