@@ -237,13 +237,13 @@ type MainForm() as this =
     let makeBell gain =
 
         let envBell =
-            Synth.envGen 0.0 [0.1, 1.0; 1.5, 0.0] None
+            Synth.envGen 0.0 [(0.1, 1.0); (1.5, 0.0)] None
 
         let playNote freq =
             let s =
                 constant 0.0
                     >>> Synth.oscSine 5.0
-                    >>^ ((*) 0.5)
+                    >>^ ((*) 0.05)
                     >>> Synth.oscSine freq
             let e =
                 constant NoEvt
@@ -262,7 +262,6 @@ type MainForm() as this =
                 (constant 0.0 &&& identity)
                 playNotesRec
 
-        // playNote (Midi.toFreq trackNote.Value)
         let notes =
             [(0.0, 60); (2.0, 62); (2.0, 64); (2.0, 65); (2.0, 67); (2.0, 69); (2.0, 71); (2.0, 72)]
                 |> List.map (fun (time, note) -> time, Midi.toFreq note)
@@ -296,6 +295,7 @@ type MainForm() as this =
         btnPlay.Select()
 
     let onTest _ =
+        engine.RemoveAllInputs()
         makeBell 0.2 |> engine.AddInput
 
     do
