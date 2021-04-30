@@ -101,9 +101,16 @@ type EventTest() =
         let sf =
             Event.afterEach
                 [
-                    1.5, "hello"
-                    3.0, "world"
+                    1.5, "hello"   // t = 1.5
+                    1.5, "world"   // t = 3.0
                 ]
-        let expected = [ NoEvt; NoEvt; Evt "hello"; Evt "world"; NoEvt ]
-        let actual = Test.run [ 10; 11; 12; 13; 14 ] sf
+        let expected =
+            [
+                NoEvt              // t = 0.0
+                NoEvt              // t = 1.0
+                Evt "hello"        // t = 2.0
+                Evt "world"        // t = 3.0
+                NoEvt              // 4 = 4.0
+            ]
+        let actual = Test.run [ 0; 0; 0; 0; 0 ] sf
         Assert.AreEqual(expected, actual)

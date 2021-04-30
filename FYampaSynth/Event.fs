@@ -70,7 +70,7 @@ module Event =
                 SF (fun _ _ ->
                     if q < 0.0 then failwith "Unexpected"
                     elif q <= 0.0 then emitEventsScheduleNext 0.0 [x] tail
-                    else awaitNextEvent -q x qxs, NoEvt)
+                    else awaitNextEvent -q x tail, NoEvt)
             | [] -> never
 
     let afterEach qxs =
