@@ -36,3 +36,28 @@ type SignalFunctionTest() =
         Assert.AreEqual(
             ["0"; "1"; "1"],
             run [0.5; 1.0; 1.5] (sf2 <<< sf1))
+
+    [<TestMethod>]
+    member __.Parallel() =
+        let sf1 = arr (fun n -> n % 2 = 0)
+        let sf2 = arr (fun n -> n % 2 = 1)
+        let input1 = [3; 1; 4]
+        let input2 = [3; 2; 1]
+        Assert.AreEqual(
+            [(false, true); (false, false); (true, true)],
+            run (List.zip input1 input2) (sf1 *** sf2))
+        Assert.AreEqual(
+            [(false, true); (false, true); (true, false)],
+            run input1 (sf1 &&& sf2))
+
+    [<TestMethod>]
+    // 3 + 10, 3 - 10 -> 13, -7
+    // 1 + -7, 1 - -7 -> -6,  8
+    // 4 +  8, 4 -  8 -> 12, -4
+    member __.Loop() =
+        let sf =
+            arr (fun (x, y) -> x + y, x - y)
+                |> loop 10
+        Assert.AreEqual(
+            [13; -6; 12],
+            run [3; 1; 4] sf)
