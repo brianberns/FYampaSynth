@@ -4,7 +4,6 @@ open System.Drawing
 open System.Windows.Forms
 
 open FYampaSynth
-open Arrow
 
 module Control =
 
@@ -12,21 +11,6 @@ module Control =
     let addTo (parent : Control) (control : 't when 't :> Control) =
         parent.Controls.Add(control)
         control
-
-/// Variation types.
-type VariationType =
-    | Constant = 0
-    | Sine = 1
-    | Sawtooth = 2
-
-module VariationType =
-
-    let makeVariation variType variFreq =
-        match variType with
-            | VariationType.Constant -> constant 0.0
-            | VariationType.Sine -> Synth.oscSine variFreq
-            | VariationType.Sawtooth -> Synth.oscSawtooth variFreq
-            | _ -> failwith "Unexpected"
 
 type MainForm() as this =
     inherit Form(

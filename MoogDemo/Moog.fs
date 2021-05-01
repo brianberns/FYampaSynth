@@ -3,11 +3,29 @@
 open FYampaSynth
 open Arrow
 
+/// Variation types.
+type VariationType =
+    | Constant = 0
+    | Sine = 1
+    | Sawtooth = 2
+
+module VariationType =
+
+    /// Makes variation of the given type and frequency.
+    let makeVariation variType variFreq =
+        match variType with
+            | VariationType.Constant -> constant 0.0
+            | VariationType.Sine -> Synth.oscSine variFreq
+            | VariationType.Sawtooth -> Synth.oscSawtooth variFreq
+            | _ -> failwith "Unexpected"
+
 module Synth =
 
+    /// Hard-coded resonance, for now. Future: Allow this to vary.
     let private resonance = 0.5
 
-    let private makePipeline note filterFreqOpt variation =
+    /// Creates either a Moog or unfiltered signal function.
+    let private makeSynth note filterFreqOpt variation =
         match filterFreqOpt with
             | Some filterFreq ->
                 (note &&& variation)
@@ -18,7 +36,7 @@ module Synth =
     /// Builds a synthesizer that plays continuously from the given values.
     let makeContinuous noteFreq filterFreqOpt variation gain =
         let note = Synth.oscSawtooth noteFreq
-        makePipeline note filterFreqOpt variation
+        makeSynth note filterFreqOpt variation
             >>^ (*) gain
             |> Synth
 
@@ -34,7 +52,7 @@ module Synth =
             let note = Synth.oscSawtooth noteFreq
             let s =
                 constant 0.0 >>>
-                    makePipeline note filterFreqOpt variation
+                    makeSynth note filterFreqOpt variation
             let e =
                 constant NoEvt
                     >>> envBell
@@ -43,12 +61,10 @@ module Synth =
 
         /// Plays a series of notes.
         let playNotes =
-
             let rec playNotesRec freq =
                 Event.switch
                     (playNote freq &&& Event.notYet)
                     playNotesRec
-
             Event.switch
                 (constant (0.0 : Sample) &&& identity)
                 playNotesRec
