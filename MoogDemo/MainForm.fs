@@ -195,8 +195,8 @@ type MainForm() as this =
 
         new TrackBar(
             Minimum = 0,
-            Maximum = 10,
-            Value = 2,
+            Maximum = 12,
+            Value = 4,
             TickFrequency = 1,
             SmallChange = 1,
             LargeChange = 1,
@@ -209,7 +209,7 @@ type MainForm() as this =
 
     /// Converts volume to gain.
     let getGain volume =
-        float volume / (10.0 * float trackVolume.Maximum)
+        float volume / (4.0 * float trackVolume.Maximum)
 
     /// Plays continuous sound.
     let btnContinuous =

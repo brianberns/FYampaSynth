@@ -7,37 +7,34 @@ module Synth =
 
     let private resonance = 0.5
 
+    let private makePipeline note filterFreqOpt variation =
+        match filterFreqOpt with
+            | Some filterFreq ->
+                (note &&& variation)
+                    >>> Synth.moogVcf filterFreq resonance
+            | None ->
+                variation >>> note
+
     /// Builds a synthesizer that plays continuously from the given values.
     let makeContinuous noteFreq filterFreqOpt variation gain =
         let note = Synth.oscSawtooth noteFreq
-        let pipeline =
-            match filterFreqOpt with
-                | Some filterFreq ->
-                    (note &&& variation)
-                        >>> Synth.moogVcf filterFreq resonance
-                | None ->
-                    variation >>> note
-        pipeline
+        makePipeline note filterFreqOpt variation
             >>^ (*) gain
             |> Synth
 
     /// Builds a synthesizer that plays notes from the given values.
     let makeDiscrete filterFreqOpt variation gain =
+
+        /// A bell-like envelope.
         let envBell =
-            Synth.envGen 0.0 [(0.1, 1.0); (1.5, 0.0)] None   // a bell-like envelope
+            Synth.envGen 0.0 [(0.1, 1.0); (1.5, 0.0)] None
 
         /// Plays a single note at the given frequency.
-        let playNote freq =
+        let playNote noteFreq =
+            let note = Synth.oscSawtooth noteFreq
             let s =
-                match filterFreqOpt with
-                    | Some filterFreq ->
-                        constant 0.0
-                            >>> (Synth.oscSawtooth freq &&& variation)
-                            >>> Synth.moogVcf filterFreq resonance
-                    | None ->
-                        constant 0.0
-                            >>> variation
-                            >>> Synth.oscSawtooth freq
+                constant 0.0 >>>
+                    makePipeline note filterFreqOpt variation
             let e =
                 constant NoEvt
                     >>> envBell
