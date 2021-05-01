@@ -19,14 +19,17 @@ open Arrow
 
 use engine = new AudioEngine()
 Synth.oscSine 440.0   // A above middle C
-    >>^ (*) 0.1       // reduce volume (sine waves are obnoxious!)
+    >>^ (*) 0.05      // reduce volume (sine waves are obnoxious!)
     |> Synth
     |> engine.AddInput
 ```
 To make a slightly more interesting synthesizer, we can use a sawtooth wave instead and slowly oscillate its frequency:
 
 ```
+Synth.oscSine 1.0
+    >>> Synth.oscSawtooth 440.0
+    >>^ (*) 0.05   // sawtooth waves are also obnoxious
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTMyMDk1NzkwMCw1NDMzMTM4NzVdfQ==
+eyJoaXN0b3J5IjpbMTQwNTgzNjcwOSw1NDMzMTM4NzVdfQ==
 -->
