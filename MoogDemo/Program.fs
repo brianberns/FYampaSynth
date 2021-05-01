@@ -1,4 +1,4 @@
-﻿namespace SynthDemo
+﻿namespace MoogDemo
 
 open System
 open System.Threading
