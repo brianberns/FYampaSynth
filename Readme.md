@@ -9,11 +9,13 @@ Where a "signal" is (conceptually) a function from time to values of some type:
 type Signal<'a> = Time -> 'a
 ```
 Signal functions are first-class objects in Yampa, and can be composed using ["arrow" combinators](https://www.haskell.org/arrows/) to synthesize music in software.
+
+FYampaSynth uses [NAudio](https://github.com/naudio/NAudio) to generate sound, and hence is Windows-only.
 ## Example
 A simple sine-wave oscillator can be created as follows:
 ```
-
+let 
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNDc2MzA4NDY1XX0=
+eyJoaXN0b3J5IjpbNTQzMzEzODc1XX0=
 -->
