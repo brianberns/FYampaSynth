@@ -26,10 +26,11 @@ Synth.oscSine 440.0   // A above middle C
 To make a slightly more interesting synthesizer, we can use a sawtooth wave instead and slowly oscillate its frequency:
 
 ```
-Synth.oscSine 1.0
+Synth.oscSine 1.0   // low-frequency control value
     >>> Synth.oscSawtooth 440.0
-    >>^ (*) 0.05   // sawtooth waves are also obnoxious
+    >>^ (*) 0.05    // sawtooth waves are also obnoxious
 ```
+More pleasingly, we can emulate an old Moog synthesizer (via subtractive synthesis), like this:
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQwNTgzNjcwOSw1NDMzMTM4NzVdfQ==
+eyJoaXN0b3J5IjpbODI3OTgyNTIyLDU0MzMxMzg3NV19
 -->
