@@ -11,7 +11,7 @@ type Signal<'a> = Time -> 'a
 Signal functions are first-class objects in Yampa, and can be composed using ["arrow" combinators](https://www.haskell.org/arrows/) to synthesize music in software.
 
 FYampaSynth uses [NAudio](https://github.com/naudio/NAudio) to generate sound, and hence is Windows-only.
-## Example
+## Examples
 A simple sine wave can be generated as follows:
 ```
 open FYampaSynth
@@ -35,7 +35,10 @@ More pleasingly, we can emulate an old Moog synthesizer (via subtractive synthes
     &&& Synth.oscSine 1.0)        // note and oscillation
     >>> Synth.moogVcf 880.0 0.5   // filter frequencies above 880 hz
 ```
+
+## References
+* [Modular Synthesizer Programming in Haskell](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.159.2277&rep=rep1&type=pdf): Paper describing the original YampaSynth
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwMDA2MjU4ODcsLTY1OTAyMTYyMSw0Mj
+eyJoaXN0b3J5IjpbLTEzOTY4NzIwODAsLTY1OTAyMTYyMSw0Mj
 AxODU1OTQsNTQzMzEzODc1XX0=
 -->
