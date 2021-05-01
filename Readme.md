@@ -1,6 +1,6 @@
 # Modular Synthesizer Programming in F#
 ## Overview
-FYampaSynth is a modular music synthesizer in F# based on the ideas of Haskell's [Yampa](https://wiki.haskell.org/Yampa) and [YampaSynth](https://hackage.haskell.org/package/YampaSynth). It is based on the concept of a "signal function", which maps an input stream to an output stream:
+FYampaSynth is a modular music synthesizer in F# based on the ideas of Haskell's [Yampa](https://wiki.haskell.org/Yampa) and [YampaSynth](https://hackage.haskell.org/package/YampaSynth). It is based on the concept of a "signal function", which maps an input signal to an output signal:
 ```
 type SignalFunction<'a, 'b> = Signal<'a> -> Signal<'b>
 ```
@@ -41,7 +41,7 @@ More pleasingly, we can emulate an old Moog synthesizer (via subtractive synthes
 * [Fire and Forget Audio Playback with NAudio](https://markheath.net/post/fire-and-forget-audio-playback-with)
 * [The Yampa Implementation](http://www.cs.nott.ac.uk/~psznhn/ITU-FRP2010/LectureNotes/lecture05.pdf): Practical guide to implementing Yampa.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQyMzM5OTA4MCwtODg5ODYwMTM2LC02MT
+eyJoaXN0b3J5IjpbMTY0ODc3MDgwOCwtODg5ODYwMTM2LC02MT
 A5ODMxNjksLTY1OTAyMTYyMSw0MjAxODU1OTQsNTQzMzEzODc1
 XX0=
 -->
