@@ -14,25 +14,19 @@ FYampaSynth uses [NAudio](https://github.com/naudio/NAudio) to generate sound, a
 ## Example
 A simple sine wave can be generated as follows:
 ```
-namespace FYampaSynth.Test
-
-open System
 open FYampaSynth
 open Arrow
 
-module Program =
-
-    [<EntryPoint>]
-    let main _ =
-        use engine = new AudioEngine()
-        Synth.oscSine 440.0   // A above middle C
-            >>^ (*) 0.1       // reduce volume (sine waves are obnoxious!)
-            |> Synth
-            |> engine.AddInput
-        Console.ReadLine() |> ignore
-        0
+use engine = new AudioEngine()
+Synth.oscSine 440.0   // A above middle C
+    >>^ (*) 0.1       // reduce volume (sine waves are obnoxious!)
+    |> Synth
+    |> engine.AddInput
 ```
-This signal function maps "control values" to "samples", where a control value is an arbitrary floating-point value
+To make a slightly more interesting synthesizer, we can use a sawtooth slowly oscillate the frequency of the sine wave instead:
+
+```
+```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNjA1ODE1MjAwLDU0MzMxMzg3NV19
+eyJoaXN0b3J5IjpbLTE2NzY3Mjk4OTcsNTQzMzEzODc1XX0=
 -->
