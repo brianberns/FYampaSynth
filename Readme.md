@@ -31,10 +31,11 @@ Synth.oscSine 1.0   // low-frequency control value
 ```
 More pleasingly, we can emulate an old Moog synthesizer (via subtractive synthesis), like this:
 ```
-(Synth.oscSawtooth 440.00 &&& Synth.oscSine 1.0)
+(Synth.oscSawtooth 440.00
+    &&& Synth.oscSine 1.0)        // note and oscillation
     >>> Synth.moogVcf 880.0 0.5   // filter frequencies above 880 hz
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY1OTAyMTYyMSw0MjAxODU1OTQsNTQzMz
-EzODc1XX0=
+eyJoaXN0b3J5IjpbLTIwMDA2MjU4ODcsLTY1OTAyMTYyMSw0Mj
+AxODU1OTQsNTQzMzEzODc1XX0=
 -->
