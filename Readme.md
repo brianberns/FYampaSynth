@@ -14,8 +14,9 @@ FYampaSynth uses [NAudio](https://github.com/naudio/NAudio) to generate sound, a
 ## Example
 A simple sine-wave oscillator can be created as follows:
 ```
-let 
+let sf = Synth.oscSine 440.0   // A above middle C
 ```
+This signal function takes
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNTQzMzEzODc1XX0=
+eyJoaXN0b3J5IjpbMTgwNjkzNzYyOSw1NDMzMTM4NzVdfQ==
 -->
