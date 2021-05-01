@@ -4,11 +4,11 @@ FYampaSynth is a modular music synthesizer in F# based on Haskell's [Yampa](http
 ```
 type SignalFunction<'a, 'b> = Signal<'a> -> Signal<'b>
 ```
-Where a "signal" is a function from time (an  to values of some type:
+Where a "signal" is a function from time to values of some type:
 ```
 type Signal<'a> = Time -> 'a
 ```
-Signal functions are first-class objects in Yampa, but signals
+Signal functions are first-class objects in Yampa, but signals are not.
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODUzNDc3MTAwXX0=
+eyJoaXN0b3J5IjpbLTMxNDM5MDM3Nl19
 -->
