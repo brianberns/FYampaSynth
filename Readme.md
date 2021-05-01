@@ -28,11 +28,13 @@ To make a slightly more interesting synthesizer, we can use a sawtooth wave inst
 ```
 Synth.oscSine 1.0   // low-frequency control value
     >>> Synth.oscSawtooth 440.0
-    >>^ (*) 0.05    // sawtooth waves are also obnoxious
 ```
 More pleasingly, we can emulate an old Moog synthesizer (via subtractive synthesis), like this:
 ```
+(Synth.oscSawtooth 440.00 &&& Synth.oscSine 1.0)
+    >>> Synth.moogVcf 880.0 0.5   // filter frequencies above 880 hz
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNDIwMTg1NTk0LDU0MzMxMzg3NV19
+eyJoaXN0b3J5IjpbLTY1OTAyMTYyMSw0MjAxODU1OTQsNTQzMz
+EzODc1XX0=
 -->
