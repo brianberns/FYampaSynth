@@ -16,11 +16,12 @@ A simple sine wave can be generated as follows:
 ```
 use engine = new AudioEngine()
 Synth.oscSine 440.0   // A above middle C
+    >>> arr ((*) 0.2)
     |> Synth
     |> engine.AddInput
 Console.ReadLine() |> ignore
 ```
 This signal function maps "control values" to "samples", where a control value is an arbitrary floating-point value
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTk3Mjg1MTk2NSw1NDMzMTM4NzVdfQ==
+eyJoaXN0b3J5IjpbMTA2NDU2NDE4Miw1NDMzMTM4NzVdfQ==
 -->
