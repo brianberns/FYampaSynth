@@ -36,9 +36,9 @@ More pleasingly, we can emulate an old Moog synthesizer (via subtractive synthes
     >>> Synth.moogVcf 880.0 0.5   // filter frequencies above 880 hz
 ```
 
-## References
+## Additional references
 * [Modular Synthesizer Programming in Haskell](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.159.2277&rep=rep1&type=pdf): Paper describing the original YampaSynth
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTEzOTY4NzIwODAsLTY1OTAyMTYyMSw0Mj
-AxODU1OTQsNTQzMzEzODc1XX0=
+eyJoaXN0b3J5IjpbLTYxMDk4MzE2OSwtNjU5MDIxNjIxLDQyMD
+E4NTU5NCw1NDMzMTM4NzVdfQ==
 -->
