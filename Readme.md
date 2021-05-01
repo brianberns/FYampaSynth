@@ -14,11 +14,13 @@ FYampaSynth uses [NAudio](https://github.com/naudio/NAudio) to generate sound, a
 ## Example
 A simple sine wave can be generated as follows:
 ```
-let sf = Synth.oscSine 440.0   // A above middle C
+use engine = new AudioEngine()
+Synth.oscSine 440.0   // A above middle C
+    |> Synth
+    |> engine.AddInput
+Console.ReadLine() |> ignore
 ```
-
-
 This signal function maps "control values" to "samples", where a control value is an arbitrary floating-point value
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTk5MDQ2MDA2MCw1NDMzMTM4NzVdfQ==
+eyJoaXN0b3J5IjpbLTk3Mjg1MTk2NSw1NDMzMTM4NzVdfQ==
 -->
