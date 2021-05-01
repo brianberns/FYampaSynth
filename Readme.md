@@ -23,10 +23,10 @@ Synth.oscSine 440.0   // A above middle C
     |> Synth
     |> engine.AddInput
 ```
-To make a slightly more interesting synthesizer, we can use a sawtooth slowly oscillate the frequency of the sine wave instead:
+To make a slightly more interesting synthesizer, we can use a sawtooth wave instead and slowly oscillate its frequency:
 
 ```
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2NzY3Mjk4OTcsNTQzMzEzODc1XX0=
+eyJoaXN0b3J5IjpbMTMyMDk1NzkwMCw1NDMzMTM4NzVdfQ==
 -->
