@@ -31,6 +31,8 @@ Synth.oscSine 1.0   // low-frequency control value
     >>^ (*) 0.05    // sawtooth waves are also obnoxious
 ```
 More pleasingly, we can emulate an old Moog synthesizer (via subtractive synthesis), like this:
+```
+```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbODI3OTgyNTIyLDU0MzMxMzg3NV19
+eyJoaXN0b3J5IjpbNDIwMTg1NTk0LDU0MzMxMzg3NV19
 -->
