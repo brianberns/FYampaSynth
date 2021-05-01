@@ -38,10 +38,10 @@ More pleasingly, we can emulate an old Moog synthesizer (via subtractive synthes
 
 ## Additional references
 * [Modular Synthesizer Programming in Haskell](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.159.2277&rep=rep1&type=pdf): Paper describing the original YampaSynth.
-* [Fire and Forget Audio Playback with NAudio](https://markheath.net/post/fire-and-forget-audio-playback-with)
 * [The Yampa Implementation](http://www.cs.nott.ac.uk/~psznhn/ITU-FRP2010/LectureNotes/lecture05.pdf): Practical guide to implementing Yampa.
+* [Fire and Forget Audio Playback with NAudio](https://markheath.net/post/fire-and-forget-audio-playback-with)
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQ3NjY0NTQ2OCwxNjQ4NzcwODA4LC04OD
-k4NjAxMzYsLTYxMDk4MzE2OSwtNjU5MDIxNjIxLDQyMDE4NTU5
-NCw1NDMzMTM4NzVdfQ==
+eyJoaXN0b3J5IjpbMTY3MDE2NzYxMCwxNDc2NjQ1NDY4LDE2ND
+g3NzA4MDgsLTg4OTg2MDEzNiwtNjEwOTgzMTY5LC02NTkwMjE2
+MjEsNDIwMTg1NTk0LDU0MzMxMzg3NV19
 -->
