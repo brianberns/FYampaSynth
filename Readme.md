@@ -12,11 +12,13 @@ Signal functions are first-class objects in Yampa, and can be composed using ["a
 
 FYampaSynth uses [NAudio](https://github.com/naudio/NAudio) to generate sound, and hence is Windows-only.
 ## Example
-A simple sine-wave oscillator can be created as follows:
+A simple sine wave can be generated as follows:
 ```
 let sf = Synth.oscSine 440.0   // A above middle C
 ```
-This signal function takes
+
+
+This signal function maps "control values" to "samples", where a control value is an arbitrary floating-point value
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTgwNjkzNzYyOSw1NDMzMTM4NzVdfQ==
+eyJoaXN0b3J5IjpbMTk5MDQ2MDA2MCw1NDMzMTM4NzVdfQ==
 -->
