@@ -8,7 +8,7 @@ Where a "signal" is a function from time to values of some type:
 ```
 type Signal<'a> = Time -> 'a
 ```
-Signal functions are first-class objects in Yampa, but signals are not.
+Signal functions are first-class objects in Yampa, and can be composed to produce synthesizers. The combinators used to accomplish this are 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTMxNDM5MDM3Nl19
+eyJoaXN0b3J5IjpbMTk4MTAyNTY5NF19
 -->
