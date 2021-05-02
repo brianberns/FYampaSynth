@@ -3,15 +3,27 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
+	<Authors>Brian Berns</Authors>
+	<Company>Bernsrite Industries</Company>
+	<Description>Modular Synthesizer Programming in F#</Description>
+	<Copyright>Brian Berns</Copyright>
+	<RepositoryUrl>https://github.com/brianberns/FYampaSynth</RepositoryUrl>
+	<PackageLicenseFile>License</PackageLicenseFile>
+	<PackageIcon>Icon.png</PackageIcon>
+	<Version>1.0.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Icon.png" />
+    <None Include="License" />
     <Compile Include="SignalFunction.fs" />
     <Compile Include="Event.fs" />
     <Compile Include="Synth.fs" />
     <Compile Include="Midi.fs" />
     <Compile Include="AudioEngine.fs" />
   </ItemGroup>
+
+  <ItemGroup />
 
   <ItemGroup>
     <PackageReference Include="NAudio" Version="2.0.0" />
