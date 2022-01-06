@@ -132,7 +132,6 @@ module Arrow =
     let identity<'a> =
         arr id<'a>
 
-    ///
     /// Widens a signal function.
     //
     //       ┌────────────┐
@@ -146,7 +145,6 @@ module Arrow =
     let rec first sf =
         sf *** identity
 
-    ///
     /// Widens a signal function.
     //
     //       ┌────────────┐
