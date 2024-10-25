@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
-		<TargetFramework>net5.0-windows</TargetFramework>
+		<TargetFramework>net8.0-windows</TargetFramework>
 		<Authors>Brian Berns</Authors>
 		<Company>Bernsrite Industries</Company>
 		<Description>Modular Synthesizer Programming in F#</Description>
@@ -32,7 +32,7 @@
 	<ItemGroup />
 
 	<ItemGroup>
-		<PackageReference Include="NAudio" Version="2.0.1" />
+		<PackageReference Include="NAudio" Version="2.2.1" />
 	</ItemGroup>
 
 </Project>
