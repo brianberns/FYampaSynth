@@ -17,14 +17,14 @@ type AudioEngine() =
         output.Init(mixer)
         output.Play()
 
-    member __.AddInput(input : ISampleProvider) =
+    member _.AddInput(input : ISampleProvider) =
         mixer.AddMixerInput(input)
 
-    member __.RemoveInput(input : ISampleProvider) =
+    member _.RemoveInput(input : ISampleProvider) =
         mixer.RemoveMixerInput(input)
 
-    member __.RemoveAllInputs() =
+    member _.RemoveAllInputs() =
         mixer.RemoveAllMixerInputs()
 
     interface IDisposable with
-        member __.Dispose() = output.Dispose()
+        member _.Dispose() = output.Dispose()

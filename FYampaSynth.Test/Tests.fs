@@ -21,7 +21,7 @@ module Test =
 type SignalFunctionTest() =
 
     [<TestMethod>]
-    member __.Arr() =
+    member _.Arr() =
         let sf = arr (fun n -> 2 * n)
         Assert.AreEqual(
             [0; 2; 4],
@@ -29,7 +29,7 @@ type SignalFunctionTest() =
 
     [<TestMethod>]
     // fsharplint:disable ReimplementsFunction
-    member __.Compose() =
+    member _.Compose() =
         let sf1 = arr (fun x -> int x)
         let sf2 = arr (fun n -> string n)
         Assert.AreEqual(
@@ -40,7 +40,7 @@ type SignalFunctionTest() =
             Test.run [0.5; 1.0; 1.5] (sf2 <<< sf1))
 
     [<TestMethod>]
-    member __.Parallel() =
+    member _.Parallel() =
         let sf1 = arr (fun n -> n % 2 = 0)
         let sf2 = arr (fun n -> n % 2 = 1)
         let input1 = [3; 1; 4]
@@ -56,7 +56,7 @@ type SignalFunctionTest() =
     // 3 + 10, 3 - 10 -> 13, -7
     // 1 + -7, 1 - -7 -> -6,  8
     // 4 +  8, 4 -  8 -> 12, -4
-    member __.Loop() =
+    member _.Loop() =
         let sf =
             arr (fun (x, y) -> x + y, x - y)
                 |> loop 10
@@ -68,7 +68,7 @@ type SignalFunctionTest() =
 type EventTest() =
 
     [<TestMethod>]
-    member __.Hold() =
+    member _.Hold() =
         let sf = Event.hold 0
         Assert.AreEqual(
             [0; 0; 1; 1; 1; 2; 3; 3],
@@ -83,7 +83,7 @@ type EventTest() =
                 NoEvt ] sf)
 
     [<TestMethod>]
-    member __.Switch() =
+    member _.Switch() =
         let sf =
             identity &&&
                 arr (fun n ->
@@ -97,7 +97,7 @@ type EventTest() =
                 (Event.switch sf f))
 
     [<TestMethod>]
-    member __.AfterEach() =
+    member _.AfterEach() =
         let sf =
             Event.afterEach
                 [
@@ -116,7 +116,7 @@ type EventTest() =
         Assert.AreEqual(expected, actual)
 
     [<TestMethod>]
-    member __.NotYet() =
+    member _.NotYet() =
         let sf = arr Evt >>> Event.notYet
         Assert.AreEqual(
             [ NoEvt; Evt 2; Evt 3 ],

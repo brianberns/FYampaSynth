@@ -36,10 +36,10 @@ type Synth(sf) =
     /// NAudio integration.
     interface ISampleProvider with
 
-        member __.WaveFormat =
+        member _.WaveFormat =
             WaveFormat.CreateIeeeFloatWaveFormat(Sample.rate, numChannels)
 
-        member __.Read(buffer) =
+        member _.Read(buffer) =
             sfCur <- read sfCur buffer
             buffer.Length
 
