@@ -8,7 +8,7 @@ open NAudio.Wave.SampleProviders
 /// https://markheath.net/post/fire-and-forget-audio-playback-with
 type AudioEngine() =
 
-    let output = new WaveOutEvent()
+    let output = new WaveOut()
     let mixer =
         let format = WaveFormat.CreateIeeeFloatWaveFormat(Sample.rate, 2)
         MixingSampleProvider(format, ReadFully = true)

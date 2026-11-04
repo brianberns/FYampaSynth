@@ -22,17 +22,13 @@ type Synth(sf) =
     let dt = 1.0 / float Sample.rate
 
     /// Populates the given buffer using the given signal function.
-    let read sf (buffer : float32[]) offset count =
-        assert(count % numChannels = 0)
-        let numSamples = count / numChannels
-        (sf, seq { 0 .. numSamples - 1 })
-            ||> Seq.fold (fun (SF tf) iSample ->
-                let sf', (sample : float) = tf dt 0.0   // feed zeros in for now
-                let sample = float32 sample
-                let idx = numChannels * (offset + iSample)
-                for iChannel = 0 to numChannels - 1 do
-                    buffer.[idx + iChannel] <- sample
-                sf')
+    let rec read (SF tf) (buffer : Span<float32>) =
+        assert(buffer.Length % numChannels = 0)
+        if buffer.IsEmpty then SF tf
+        else
+            let sf', (sample : float) = tf dt 0.0   // feed zeros in for now
+            buffer.Slice(0, numChannels).Fill(float32 sample)
+            read sf' (buffer.Slice(numChannels))
 
     /// Current state of the signal function.
     let mutable sfCur = sf
@@ -43,9 +39,9 @@ type Synth(sf) =
         member __.WaveFormat =
             WaveFormat.CreateIeeeFloatWaveFormat(Sample.rate, numChannels)
 
-        member __.Read(buffer, offset, count) =
-            sfCur <- read sfCur buffer offset count
-            count
+        member __.Read(buffer) =
+            sfCur <- read sfCur buffer
+            buffer.Length
 
 /// Modular music synthesis.
 // https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.159.2277&rep=rep1&type=pdf
